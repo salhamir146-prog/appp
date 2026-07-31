@@ -2,6 +2,10 @@ name = "appp"
 main = "worker.js"
 compatibility_date = "2026-07-31"
 
+[assets]
+directory = "."
+binding = "ASSETS"
+
 [[kv_namespaces]]
 binding = "TELEGRAM_KV"
 id = "509be3057c4d44ef9eddfd047fcaf759"
