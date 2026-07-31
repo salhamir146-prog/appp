@@ -7,4 +7,4 @@ binding = "TELEGRAM_KV"
 id = "509be3057c4d44ef9eddfd047fcaf759"
 
 [vars]
-SMS_IR_TEMPLATE_ID = "کد_قالب_پیامک_تو_سامانه_sms_ir"
+SMS_IR_TEMPLATE_ID = "828739"
