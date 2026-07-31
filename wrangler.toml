@@ -5,3 +5,6 @@ compatibility_date = "2026-07-31"
 [[kv_namespaces]]
 binding = "TELEGRAM_KV"
 id = "YOUR_KV_NAMESPACE_ID"
+
+[vars]
+SMS_IR_TEMPLATE_ID = "YOUR_TEMPLATE_ID"
