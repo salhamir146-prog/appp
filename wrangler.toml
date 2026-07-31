@@ -1,10 +1,10 @@
-name = "telegram-clone"
+name = "appp"
 main = "worker.js"
 compatibility_date = "2026-07-31"
 
 [[kv_namespaces]]
 binding = "TELEGRAM_KV"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "ff_jnjdjnv"
 
 [vars]
-SMS_IR_TEMPLATE_ID = "YOUR_TEMPLATE_ID"
+SMS_IR_TEMPLATE_ID = "کد_قالب_پیامک_تو_سامانه_sms_ir"
