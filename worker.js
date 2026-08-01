@@ -6,7 +6,19 @@ export default {
     if (url.pathname.startsWith('/api/')) {
       return handleApi(request, env, url);
     }
+// ===== ۱۲. دریافت لیست همه کاربران =====
+if (url.pathname === "/api/get-users" && request.method === "GET") {
+  const users = await db.prepare(
+    `SELECT id, name, phone, avatar_url, created_at FROM users ORDER BY name ASC`
+  ).all();
 
+  return new Response(JSON.stringify({ 
+    success: true, 
+    users: users.results 
+  }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+}
     // نمایش فایل‌های استاتیک
     try {
       let response = await env.ASSETS.fetch(request);
