@@ -74,46 +74,87 @@
 
     <div class='tg-header'>
         <div class='tg-header-right'>
-            <div class='tg-icon-btn'><span class='material-icons-round'>menu</span></div>
+            <div class='tg-icon-btn' onclick="window.location.href='profile.html'">
+                <span class='material-icons-round'>menu</span>
+            </div>
             <div class='tg-app-title'>تلگرام</div>
         </div>
-        <div class='tg-icon-btn'><span class='material-icons-round'>search</span></div>
-    </div>
-
-    <div class='tg-chat-list'>
-        <div class='tg-chat-item' onclick="location.href='chat.html'">
-            <div class='tg-avatar-wrap'>
-                <div class='tg-avatar' style="background-color: #3CBF8A;"></div>
-            </div>
-            <div class='tg-chat-info'>
-                <div class='tg-chat-row1'>
-                    <div class='tg-chat-name'>محمد</div>
-                    <div class='tg-chat-time'>۱۲:۱۵</div>
-                </div>
-                <div class='tg-chat-row2'>
-                    <div class='tg-chat-preview'>سلام داداش، کدهای جدید رو فرستادم...</div>
-                    <div class='tg-badge'>2</div>
-                </div>
-            </div>
-        </div>
-
-        <div class='tg-chat-item' onclick="location.href='chat.html'">
-            <div class='tg-avatar-wrap'>
-                <div class='tg-avatar' style="background-color: #52D39A;"></div>
-            </div>
-            <div class='tg-chat-info'>
-                <div class='tg-chat-row1'>
-                    <div class='tg-chat-name'>گروه برنامه‌نویسان</div>
-                    <div class='tg-chat-time'>دیروز</div>
-                </div>
-                <div class='tg-chat-row2'>
-                    <div class='tg-chat-preview'>علی: بچه‌ها کسی با لایبرری جدید کار کرده؟</div>
-                </div>
-            </div>
+        <div class='tg-icon-btn' onclick="alert('🔍 جستجوی چت‌ها')">
+            <span class='material-icons-round'>search</span>
         </div>
     </div>
 
-    <div class='tg-fab'><span class='material-icons-round'>edit</span></div>
+    <div class='tg-chat-list' id="chatList">
+        <!-- چت‌ها از دیتابیس بارگذاری میشن -->
+        <div style="text-align:center;padding:40px;color:var(--tg-subtext);">⏳ در حال بارگذاری...</div>
+    </div>
 
+    <div class='tg-fab' onclick="window.location.href='new-chat.html'">
+        <span class='material-icons-round'>edit</span>
+    </div>
+
+    <script>
+        const WORKER_URL = "https://appp.salhamir146.workers.dev";
+        const userId = localStorage.getItem('userId');
+        if (!userId) window.location.href = 'index.html';
+
+        // ===== بارگذاری چت‌ها از دیتابیس =====
+        async function loadChats() {
+            const list = document.getElementById('chatList');
+            try {
+                const response = await fetch(`${WORKER_URL}/api/get-chats?userId=${userId}`);
+                const data = await response.json();
+
+                if (data.success && data.chats.length > 0) {
+                    list.innerHTML = data.chats.map(chat => {
+                        const name = chat.chat_name || chat.chat_id || 'گفتگو';
+                        const initial = name.charAt(0).toUpperCase();
+                        const colors = ['#3CBF8A', '#52D39A', '#2CBF71', '#4CAF50', '#8BC34A'];
+                        const colorIndex = chat.chat_id.length % colors.length;
+                        return `
+                            <div class='tg-chat-item' onclick="window.location.href='chat.html?chatId=${chat.chat_id}'">
+                                <div class='tg-avatar-wrap'>
+                                    <div class='tg-avatar' style="background-color: ${colors[colorIndex]}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:700;">${initial}</div>
+                                </div>
+                                <div class='tg-chat-info'>
+                                    <div class='tg-chat-row1'>
+                                        <div class='tg-chat-name'>${name}</div>
+                                        <div class='tg-chat-time'>${chat.message_count || 0} پیام</div>
+                                    </div>
+                                    <div class='tg-chat-row2'>
+                                        <div class='tg-chat-preview'>${chat.last_message || 'شروع گفتگو...'}</div>
+                                        ${chat.unread_count ? `<div class='tg-badge'>${chat.unread_count}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    list.innerHTML = `
+                        <div style="text-align:center;padding:60px 20px;color:var(--tg-subtext);">
+                            <div style="font-size:48px;margin-bottom:12px;">💬</div>
+                            <div style="font-size:16px;font-weight:600;color:var(--tg-text);">هنوز چتی ندارید</div>
+                            <div style="font-size:13px;margin-top:4px;">با کلیک روی دکمه ✏️ پایین صفحه شروع کنید</div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                list.innerHTML = `
+                    <div style="text-align:center;padding:60px 20px;color:var(--tg-subtext);">
+                        <div style="font-size:48px;margin-bottom:12px;">⚠️</div>
+                        <div style="font-size:16px;font-weight:600;color:var(--tg-text);">خطا در بارگذاری</div>
+                        <div style="font-size:13px;margin-top:4px;">لطفاً دوباره تلاش کنید</div>
+                    </div>
+                `;
+                console.error('Error loading chats:', err);
+            }
+        }
+
+        // ===== بارگذاری خودکار =====
+        loadChats();
+
+        // بارگذاری مجدد هر ۱۰ ثانیه
+        setInterval(loadChats, 10000);
+    </script>
 </body>
 </html>
