@@ -75,11 +75,6 @@ if (url.pathname === "/api/send-code" && request.method === "POST") {
   });
 }
 
-      return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
-
     // ===== ۲. تایید کد و ثبت/ورود کاربر =====
     if (url.pathname === "/api/verify-code" && request.method === "POST") {
       const { phone, code } = await request.json();
