@@ -72,10 +72,9 @@
             margin: 0 auto;
             flex: 1;
             padding: 12px;
-            gap: 10px; /* فاصله مناسب بین کارت‌های گرد */
+            gap: 10px;
         }
         
-        /* کارت‌های چت به‌صورت کاملاً گرد، شناور و شیک */
         .chat-item {
             display: flex; 
             align-items: center; 
@@ -84,7 +83,7 @@
             position: relative; 
             transition: all 0.25s ease;
             background: #ffffff;
-            border-radius: 20px; /* گوشه‌های کاملاً گرد و مدرن */
+            border-radius: 20px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(0, 0, 0, 0.02);
         }
@@ -120,12 +119,12 @@
         }
 
         .app-fab {
-            position: fixed; left: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 18px;
+            position: fixed; right: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 18px;
             background: var(--app-primary); color: #fff; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 6px 20px rgba(60, 191, 138, 0.4); cursor: pointer; z-index: 90;
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .app-fab:hover { transform: scale(1.08) rotate(-5deg); background: var(--app-primary-hover); }
+        .app-fab:hover { transform: scale(1.08) rotate(5deg); background: var(--app-primary-hover); }
         .app-fab:active { transform: scale(0.95); }
 
         .modal-overlay {
@@ -401,6 +400,17 @@
             }
         }
 
+        // بررسی نوع کلیک روی گفتگو (گروه، کانال یا چت خصوصی)
+        function openChat(chatId, chatType) {
+            if (chatType === 'group') {
+                window.location.href = `group-settings.html?chatId=${chatId}`;
+            } else if (chatType === 'channel') {
+                window.location.href = `channel-settings.html?chatId=${chatId}`;
+            } else {
+                window.location.href = `chat.html?chatId=${chatId}`;
+            }
+        }
+
         async function loadChats() {
             const list = document.getElementById('chatList');
             try {
@@ -419,7 +429,7 @@
                         const icon = isGroup ? 'گ' : isChannel ? 'ک' : '';
                         
                         return `
-                            <div class='chat-item' onclick="window.location.href='chat.html?chatId=${chat.chat_id}'">
+                            <div class='chat-item' onclick="openChat('${chat.chat_id}', '${chat.chat_type}')">
                                 <div class='avatar-wrap'>
                                     <div class='chat-avatar' style="background-color: ${colors[colorIdx]};">${icon || initial}</div>
                                 </div>
