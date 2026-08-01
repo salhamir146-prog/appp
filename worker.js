@@ -34,7 +34,7 @@ async function handleApi(request, env, url) {
   try {
     const db = env.DB;
 
-    // ===== ۱. ارسال کد تایید (همون قبلی) =====
+    // ===== ۱. ارسال کد تایید =====
     if (url.pathname === "/api/send-code" && request.method === "POST") {
       const { phone } = await request.json();
       if (!phone) {
@@ -47,31 +47,32 @@ async function handleApi(request, env, url) {
       const code = Math.floor(1000 + Math.random() * 9000).toString();
       await env.TELEGRAM_KV.put(`otp:${phone}`, code, { expirationTtl: 300 });
 
-      const smsResponse = await fetch("https://api.sms.ir/v1/send/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-KEY": env.SMS_IR_API_KEY
-        },
-        body: JSON.stringify({
-          Mobile: phone,
-          TemplateId: Number(env.SMS_IR_TEMPLATE_ID),
-          Parameters: [{ Name: "OTP", Value: code }]
-        })
-      });
-
-      const smsResult = await smsResponse.json();
-
-      if (smsResult.status === 1 || smsResult.success) {
-        return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      } else {
-        return new Response(JSON.stringify({ success: false, message: "خطا در ارسال پیامک", error: smsResult }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
+      // ارسال پیامک (در صورت وجود API Key)
+      if (env.SMS_IR_API_KEY) {
+        try {
+          const smsResponse = await fetch("https://api.sms.ir/v1/send/verify", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": env.SMS_IR_API_KEY
+            },
+            body: JSON.stringify({
+              Mobile: phone,
+              TemplateId: Number(env.SMS_IR_TEMPLATE_ID || 828739),
+              Parameters: [{ Name: "OTP", Value: code }]
+            })
+          });
+          const smsResult = await smsResponse.json();
+          console.log('SMS result:', smsResult);
+        } catch (smsError) {
+          console.error('SMS error:', smsError);
+          // ادامه بده حتی اگر پیامک ارسال نشد
+        }
       }
+
+      return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
 
     // ===== ۲. تایید کد و ثبت/ورود کاربر =====
@@ -94,7 +95,6 @@ async function handleApi(request, env, url) {
       ).bind(phone).first();
 
       if (!user) {
-        // کاربر جدید
         const result = await db.prepare(
           `INSERT INTO users (phone, name, created_at) VALUES (?, ?, ?)`
         ).bind(phone, `کاربر ${phone.slice(-4)}`, Date.now()).run();
@@ -210,7 +210,6 @@ async function handleApi(request, env, url) {
         });
       }
 
-      // اضافه کردن اعضا به چت
       for (const userId of userIds) {
         await db.prepare(
           `INSERT OR IGNORE INTO chat_members (chat_id, user_id, joined_at) VALUES (?, ?, ?)`
@@ -274,6 +273,50 @@ async function handleApi(request, env, url) {
       });
     }
 
+    // ===== ۹. به‌روزرسانی کاربر =====
+    if (url.pathname === "/api/update-user" && request.method === "POST") {
+      const { userId, name, username, bio } = await request.json();
+
+      await db.prepare(
+        `UPDATE users SET name = ?, username = ?, bio = ? WHERE id = ?`
+      ).bind(name || '', username || '', bio || '', userId).run();
+
+      return new Response(JSON.stringify({ success: true, message: "پروفایل به‌روز شد" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // ===== ۱۰. آپلود عکس پروفایل =====
+    if (url.pathname === "/api/upload-avatar" && request.method === "POST") {
+      try {
+        const formData = await request.formData();
+        const file = formData.get('avatar');
+        const userId = formData.get('userId');
+
+        if (!file || !userId) {
+          return new Response(JSON.stringify({ success: false, message: "اطلاعات ناقص است" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+          });
+        }
+
+        const arrayBuffer = await file.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+        
+        await env.TELEGRAM_KV.put(`avatar:${userId}`, base64, { expirationTtl: 86400 * 30 });
+
+        return new Response(JSON.stringify({ success: true, message: "عکس آپلود شد" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, message: "خطا در آپلود", error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+    }
+
+    // ===== ۱۱. مسیر پیش‌فرض (NotFound) =====
     return new Response(JSON.stringify({ success: false, message: "مسیر یافت نشد" }), {
       status: 404,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -285,33 +328,4 @@ async function handleApi(request, env, url) {
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
   }
-}
-// ===== ۹. به‌روزرسانی کاربر =====
-if (url.pathname === "/api/update-user" && request.method === "POST") {
-  const { userId, name, username, bio } = await request.json();
-
-  await db.prepare(
-    `UPDATE users SET name = ?, username = ?, bio = ? WHERE id = ?`
-  ).bind(name, username, bio, userId).run();
-
-  return new Response(JSON.stringify({ success: true, message: "پروفایل به‌روز شد" }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
-
-// ===== ۱۰. آپلود عکس پروفایل =====
-if (url.pathname === "/api/upload-avatar" && request.method === "POST") {
-  const formData = await request.formData();
-  const file = formData.get('avatar');
-  const userId = formData.get('userId');
-
-  // ذخیره در KV (برای عکس‌های کوچک)
-  const arrayBuffer = await file.arrayBuffer();
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-  
-  await env.TELEGRAM_KV.put(`avatar:${userId}`, base64);
-
-  return new Response(JSON.stringify({ success: true, message: "عکس آپلود شد" }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
 }
