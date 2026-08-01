@@ -28,7 +28,6 @@
             flex-direction: column;
         }
 
-        /* هدر جدید دقیقاً مشابه تصویر */
         .app-header {
             height: 64px;
             background: var(--app-header-bg);
@@ -48,7 +47,6 @@
         }
         .app-icon-btn:hover { background: var(--app-hover); color: var(--app-primary); }
 
-        /* نوار جستجوی داخل هدر مشابه تصویر */
         .search-box-wrap {
             flex: 1;
             background: #f1f3f5;
@@ -62,19 +60,9 @@
             transition: background 0.2s, box-shadow 0.2s;
             border: 1px solid transparent;
         }
-        .search-box-wrap:hover {
-            background: #e9ecef;
-        }
-        .search-box-wrap .search-icon {
-            color: var(--app-subtext);
-            font-size: 22px;
-        }
-        .search-box-wrap .search-input-placeholder {
-            color: var(--app-subtext);
-            font-size: 14.5px;
-            user-select: none;
-            font-weight: 400;
-        }
+        .search-box-wrap:hover { background: #e9ecef; }
+        .search-box-wrap .search-icon { color: var(--app-subtext); font-size: 22px; }
+        .search-box-wrap .search-input-placeholder { color: var(--app-subtext); font-size: 14.5px; user-select: none; font-weight: 400; }
 
         .chat-list-container { 
             display: flex; 
@@ -83,15 +71,30 @@
             width: 100%;
             margin: 0 auto;
             flex: 1;
+            padding: 12px;
+            gap: 10px; /* فاصله مناسب بین کارت‌های گرد */
         }
+        
+        /* کارت‌های چت به‌صورت کاملاً گرد، شناور و شیک */
         .chat-item {
-            display: flex; align-items: center; padding: 12px 16px; cursor: pointer;
-            position: relative; transition: background 0.2s ease;
+            display: flex; 
+            align-items: center; 
+            padding: 12px 16px; 
+            cursor: pointer;
+            position: relative; 
+            transition: all 0.25s ease;
             background: #ffffff;
-            border-bottom: 1px solid var(--app-border);
+            border-radius: 20px; /* گوشه‌های کاملاً گرد و مدرن */
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.02);
         }
-        .chat-item:hover { background: var(--app-hover); }
-        .chat-item:active { transform: scale(0.99); }
+        .chat-item:hover { 
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(60, 191, 138, 0.1);
+            border-color: rgba(60, 191, 138, 0.2);
+        }
+        .chat-item:active { transform: scale(0.98); }
         
         .avatar-wrap { position: relative; margin-left: 14px; flex-shrink: 0; }
         .chat-avatar { 
@@ -278,7 +281,6 @@
 </head>
 <body>
 
-    <!-- هدر جدید مطابق عکس تلگرام: دکمه همبرگری (سه خط) در کنار نوار جستجو -->
     <div class='app-header'>
         <div class='app-icon-btn' onclick="window.location.href='profile.html'">
             <span class='material-icons-round'>menu</span>
