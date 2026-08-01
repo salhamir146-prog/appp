@@ -1,210 +1,165 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang='fa' dir='rtl'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>پروفایل</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link href='https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/icon?family=Material+Icons+Round' rel='stylesheet'>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn}
-        body{background:#f7fbf8;padding-bottom:30px}
-        .header{background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);position:sticky;top:0;z-index:100}
-        .header .back{font-size:24px;cursor:pointer;color:#555}
-        .header h1{font-size:18px;font-weight:600;flex:1}
-        .profile-container{padding:20px;display:flex;flex-direction:column;align-items:center}
-        .avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#8be4bf,#3CBF8A);display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;font-weight:700;margin-bottom:12px;cursor:pointer;position:relative}
-        .avatar:hover .avatar-overlay{opacity:1}
-        .avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;opacity:0;transition:opacity 0.3s}
-        .name{font-size:20px;font-weight:700;color:#222}
-        .bio{font-size:13px;color:#888;margin-bottom:20px}
-        .info-card{width:100%;max-width:400px;background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid #f0f0f0}
-        .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f5f5f5}
-        .info-row:last-child{border-bottom:none}
-        .info-label{font-size:12px;color:#888}
-        .info-value{font-size:14px;font-weight:500;color:#222}
-        .menu-item{width:100%;max-width:400px;background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:6px;display:flex;align-items:center;gap:14px;cursor:pointer;border:1px solid #f0f0f0;transition:background 0.2s}
-        .menu-item:active{background:#f5f5f5}
-        .menu-item span:first-child{font-size:22px;color:#555}
-        .menu-item .text{flex:1;font-size:14px;color:#222}
-        .menu-item .arrow{color:#bbb}
-        .logout{color:#ef4444}
-        .logout span:first-child{color:#ef4444}
-        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
-        .modal.active{display:flex}
-        .modal-content{background:#fff;border-radius:20px;padding:24px;width:90%;max-width:360px}
-        .modal-content h3{font-size:18px;margin-bottom:12px}
-        .modal-content input{width:100%;padding:12px;border:2px solid #e8e8e8;border-radius:10px;font-size:14px;margin-bottom:12px;outline:none}
-        .modal-content input:focus{border-color:#3CBF8A}
-        .modal-actions{display:flex;gap:10px}
-        .modal-actions button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
-        .modal-actions .save{background:#3CBF8A;color:#fff}
-        .modal-actions .cancel{background:#f5f5f5;color:#555}
-        input[type="file"]{display:none}
+        :root {
+            --tg-bg: #eef2f5;
+            --tg-header-bg: #ffffff;
+            --tg-text: #222222;
+            --tg-subtext: #707579;
+            --tg-card-bg: #ffffff;
+            --tg-border: #dfe1e5;
+            --tg-primary: #3CBF8A;
+            --tg-hover: #f5f7fa;
+        }
+        body { background: var(--tg-bg); color: var(--tg-text); }
+        
+        /* هدر تلگرامی */
+        .tg-header {
+            height: 56px; background: var(--tg-header-bg); display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .tg-header-right { display: flex; align-items: center; gap: 20px; }
+        .tg-back { font-size: 24px; color: var(--tg-subtext); cursor: pointer; transition: color 0.2s; }
+        .tg-back:hover { color: var(--tg-primary); }
+        .tg-header-title { font-size: 18px; font-weight: 600; color: var(--tg-text); }
+        
+        .tg-header-icons { display: flex; align-items: center; gap: 10px; }
+        .tg-icon-btn { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--tg-subtext); cursor: pointer; transition: background 0.2s; }
+        .tg-icon-btn:hover { background: var(--tg-hover); color: var(--tg-primary); }
+
+        .tg-profile-wrapper { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 40px; }
+        
+        /* هدر پروفایل (بخش عکس و مشخصات) */
+        .tg-user-card {
+            background: var(--tg-card-bg); padding: 24px 20px; display: flex; align-items: center; gap: 20px;
+            border-bottom: 1px solid var(--tg-border); border-top: 1px solid var(--tg-border);
+        }
+        @media(min-width: 600px) { .tg-user-card { margin-top: 12px; border-radius: 14px; border: 1px solid var(--tg-border); box-shadow: 0 1px 3px rgba(0,0,0,0.03); } }
+        
+        /* آواتار با قابلیت دوربین تلگرامی */
+        .tg-profile-avatar-container { position: relative; width: 76px; height: 76px; flex-shrink: 0; cursor: pointer; }
+        .tg-profile-avatar { width: 100%; height: 100%; border-radius: 50%; background: var(--tg-primary); background-size: cover; background-position: center; }
+        .tg-avatar-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.35); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s; color: #fff;
+        }
+        .tg-profile-avatar-container:hover .tg-avatar-overlay { opacity: 1; }
+        .tg-avatar-overlay span { font-size: 26px; }
+
+        .tg-user-details h2 { font-size: 20px; font-weight: 600; color: var(--tg-text); }
+        .tg-user-details p { font-size: 13.5px; color: var(--tg-subtext); margin-top: 3px; }
+        .tg-username { color: var(--tg-primary) !important; font-weight: 500; font-size: 14px; margin-top: 4px !important; }
+
+        /* بلوک‌های منو شبیه تلگرام اصلی */
+        .tg-section-title { font-size: 13px; font-weight: 600; color: var(--tg-primary); padding: 14px 20px 4px 20px; }
+        .tg-section {
+            background: var(--tg-card-bg); border-top: 1px solid var(--tg-border); border-bottom: 1px solid var(--tg-border);
+        }
+        @media(min-width: 600px) { .tg-section { border-radius: 14px; border: 1px solid var(--tg-border); box-shadow: 0 1px 3px rgba(0,0,0,0.03); } }
+
+        .tg-menu-item {
+            display: flex; align-items: center; justify-content: space-between; padding: 13px 20px;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .tg-menu-item:hover { background: var(--tg-hover); }
+        
+        .tg-menu-right { display: flex; align-items: center; gap: 18px; }
+        .tg-menu-right span.material-icons-round { color: var(--tg-subtext); font-size: 22px; }
+        
+        .tg-menu-text .title { font-size: 14.5px; font-weight: 500; color: var(--tg-text); }
+        .tg-menu-text .subtitle { font-size: 12px; color: var(--tg-subtext); margin-top: 2px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <span class="back material-icons-round" onclick="window.location.href='chats.html'">arrow_forward</span>
-        <h1>پروفایل</h1>
-        <span style="opacity:0;">.</span>
-    </div>
 
-    <div class="profile-container">
-        <div class="avatar" id="avatarDisplay" onclick="document.getElementById('avatarInput').click()">
-            <span id="avatarText">👤</span>
-            <div class="avatar-overlay">📷 تغییر</div>
+    <!-- هدر بالای صفحه -->
+    <div class='tg-header'>
+        <div class='tg-header-right'>
+            <span class='material-icons-round tg-back' onclick="history.back()">arrow_forward</span>
+            <div class='tg-header-title'>تنظیمات</div>
         </div>
-        <input type="file" id="avatarInput" accept="image/*">
-
-        <div class="name" id="displayName">کاربر</div>
-        <div class="bio" id="displayBio">سلام 👋</div>
-
-        <div class="info-card">
-            <div class="info-row">
-                <span class="info-label">📱 شماره تلفن</span>
-                <span class="info-value" id="displayPhone">---</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">🆔 آیدی</span>
-                <span class="info-value" id="displayUsername">@user</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">📅 عضو از</span>
-                <span class="info-value" id="displayJoined">---</span>
-            </div>
-        </div>
-
-        <div class="menu-item" onclick="openEditModal()">
-            <span class="material-icons-round">edit</span>
-            <span class="text">ویرایش پروفایل</span>
-            <span class="arrow material-icons-round">chevron_left</span>
-        </div>
-
-        <div class="menu-item" onclick="window.location.href='settings.html'">
-            <span class="material-icons-round">settings</span>
-            <span class="text">تنظیمات</span>
-            <span class="arrow material-icons-round">chevron_left</span>
-        </div>
-
-        <div class="menu-item logout" onclick="logout()">
-            <span class="material-icons-round">logout</span>
-            <span class="text">خروج از حساب</span>
-            <span class="arrow material-icons-round">chevron_left</span>
+        <div class='tg-header-icons'>
+            <div class='tg-icon-btn' onclick="alert('ویرایش اطلاعات پروفایل')"><span class='material-icons-round'>edit</span></div>
         </div>
     </div>
 
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <h3>✏️ ویرایش پروفایل</h3>
-            <input type="text" id="editName" placeholder="نام">
-            <input type="text" id="editUsername" placeholder="آیدی (مثلاً @amir)">
-            <input type="text" id="editBio" placeholder="بیوگرافی">
-            <div class="modal-actions">
-                <button class="cancel" onclick="closeEditModal()">انصراف</button>
-                <button class="save" onclick="saveProfile()">ذخیره</button>
+    <div class="tg-profile-wrapper">
+        <!-- کارت مشخصات اصلی -->
+        <div class="tg-user-card">
+            <div class="tg-profile-avatar-container" onclick="alert('انتخاب عکس جدید از گالری')">
+                <div class="tg-profile-avatar" style="background-image: url('avatar.jpg');"></div>
+                <div class="tg-avatar-overlay">
+                    <span class="material-icons-round">photo_camera</span>
+                </div>
+            </div>
+            <div class="tg-user-details">
+                <h2 id="p-name">Amirsalh</h2>
+                <p id="p-phone">+98 998 106 4505</p>
+                <p class="tg-username" id="p-username">@Agbsheb</p>
+            </div>
+        </div>
+
+        <!-- بخش حساب کاربری -->
+        <div class="tg-section-title">حساب کاربری</div>
+        <div class="tg-section">
+            <div class="tg-menu-item" onclick="alert('ویرایش شماره تلفن')">
+                <div class="tg-menu-right">
+                    <span class="material-icons-round">phone</span>
+                    <div class="tg-menu-text">
+                        <div class="title">شماره تلفن</div>
+                        <div class="subtitle">+98 998 106 4505</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tg-menu-item" onclick="alert('ویرایش نام کاربری (آیدی)')">
+                <div class="tg-menu-right">
+                    <span class="material-icons-round">alternate_email</span>
+                    <div class="tg-menu-text">
+                        <div class="title">نام کاربری</div>
+                        <div class="subtitle">@Agbsheb</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tg-menu-item" onclick="alert('ویرایش بیوگرافی')">
+                <div class="tg-menu-right">
+                    <span class="material-icons-round">info</span>
+                    <div class="tg-menu-text">
+                        <div class="title">بیوگرافی</div>
+                        <div class="subtitle">آنلاین</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بخش تنظیمات عمومی -->
+        <div class="tg-section-title">تنظیمات</div>
+        <div class="tg-section">
+            <div class="tg-menu-item" onclick="alert('حریم خصوصی و امنیت')">
+                <div class="tg-menu-right">
+                    <span class="material-icons-round">lock</span>
+                    <div class="tg-menu-text"><div class="title">حریم خصوصی و امنیت</div></div>
+                </div>
+            </div>
+            <div class="tg-menu-item" onclick="alert('تنظیمات ظاهری و تم')">
+                <div class="tg-menu-right">
+                    <span class="material-icons-round">palette</span>
+                    <div class="tg-menu-text"><div class="title">تنظیمات ظاهری و تم</div></div>
+                </div>
+            </div>
+            <div class="tg-menu-item" onclick="alert('زبان برنامه')">
+                <div class="tg-menu-right">
+                    <span class="material-icons-round">language</span>
+                    <div class="tg-menu-text"><div class="title">زبان / Language</div></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const WORKER_URL = "https://appp.salhamir146.workers.dev";
-        const userId = localStorage.getItem('userId');
-        let userData = {};
-
-        async function loadProfile() {
-            if (!userId) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${WORKER_URL}/api/get-user?userId=${userId}`);
-                const data = await response.json();
-
-                if (data.success) {
-                    userData = data.user;
-                    document.getElementById('displayName').textContent = userData.name || 'کاربر';
-                    document.getElementById('displayBio').textContent = userData.bio || 'سلام 👋';
-                    document.getElementById('displayPhone').textContent = userData.phone || '---';
-                    document.getElementById('displayUsername').textContent = userData.username || '@user';
-                    document.getElementById('displayJoined').textContent = userData.created_at ? new Date(userData.created_at).toLocaleDateString('fa') : '---';
-                    document.getElementById('avatarText').textContent = userData.name?.charAt(0) || '👤';
-                }
-            } catch (err) {
-                console.error('Error loading profile:', err);
-            }
-        }
-
-        function openEditModal() {
-            document.getElementById('editName').value = userData.name || '';
-            document.getElementById('editUsername').value = userData.username || '';
-            document.getElementById('editBio').value = userData.bio || '';
-            document.getElementById('editModal').classList.add('active');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
-        }
-
-        async function saveProfile() {
-            const name = document.getElementById('editName').value.trim();
-            const username = document.getElementById('editUsername').value.trim();
-            const bio = document.getElementById('editBio').value.trim();
-
-            try {
-                const response = await fetch(`${WORKER_URL}/api/update-user`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, name, username, bio })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    localStorage.setItem('userName', name);
-                    closeEditModal();
-                    loadProfile();
-                    alert('پروفایل با موفقیت ویرایش شد!');
-                } else {
-                    alert('خطا در ویرایش پروفایل.');
-                }
-            } catch (err) {
-                alert('خطا در ارتباط با سرور.');
-            }
-        }
-
-        function logout() {
-            if (confirm('آیا مطمئن هستید؟')) {
-                localStorage.clear();
-                window.location.href = 'index.html';
-            }
-        }
-
-        document.getElementById('avatarInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('avatar', file);
-            formData.append('userId', userId);
-
-            try {
-                const response = await fetch(`${WORKER_URL}/api/upload-avatar`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('عکس پروفایل تغییر کرد!');
-                    loadProfile();
-                }
-            } catch (err) {
-                alert('خطا در آپلود عکس.');
-            }
-        });
-
-        loadProfile();
-    </script>
 </body>
 </html>
