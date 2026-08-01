@@ -28,26 +28,53 @@
             flex-direction: column;
         }
 
+        /* هدر جدید دقیقاً مشابه تصویر */
         .app-header {
-            height: 60px;
+            height: 64px;
             background: var(--app-header-bg);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
+            padding: 0 12px;
             position: sticky;
             top: 0;
             z-index: 100;
             border-bottom: 1px solid var(--app-border);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            gap: 12px;
         }
-        .app-header-right { display: flex; align-items: center; gap: 14px; }
         .app-icon-btn { 
-            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--app-subtext); transition: all 0.2s ease;
+            width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--app-subtext); transition: all 0.2s ease; flex-shrink: 0;
         }
         .app-icon-btn:hover { background: var(--app-hover); color: var(--app-primary); }
-        .app-title { font-size: 18px; font-weight: 700; color: var(--app-text); letter-spacing: -0.3px; }
+
+        /* نوار جستجوی داخل هدر مشابه تصویر */
+        .search-box-wrap {
+            flex: 1;
+            background: #f1f3f5;
+            border-radius: 22px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            border: 1px solid transparent;
+        }
+        .search-box-wrap:hover {
+            background: #e9ecef;
+        }
+        .search-box-wrap .search-icon {
+            color: var(--app-subtext);
+            font-size: 22px;
+        }
+        .search-box-wrap .search-input-placeholder {
+            color: var(--app-subtext);
+            font-size: 14.5px;
+            user-select: none;
+            font-weight: 400;
+        }
 
         .chat-list-container { 
             display: flex; 
@@ -251,15 +278,14 @@
 </head>
 <body>
 
+    <!-- هدر جدید مطابق عکس تلگرام: دکمه همبرگری (سه خط) در کنار نوار جستجو -->
     <div class='app-header'>
-        <div class='app-header-right'>
-            <div class='app-icon-btn' onclick="window.location.href='profile.html'">
-                <span class='material-icons-round'>menu</span>
-            </div>
-            <div class='app-title'>پیام‌رسان اختصاصی</div>
+        <div class='app-icon-btn' onclick="window.location.href='profile.html'">
+            <span class='material-icons-round'>menu</span>
         </div>
-        <div class='app-icon-btn' onclick="searchChats()">
-            <span class='material-icons-round'>search</span>
+        <div class='search-box-wrap' onclick="searchChats()">
+            <span class='material-icons-round search-icon'>search</span>
+            <span class='search-input-placeholder'>جستجو</span>
         </div>
     </div>
 
