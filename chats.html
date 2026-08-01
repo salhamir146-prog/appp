@@ -28,7 +28,6 @@
             flex-direction: column;
         }
 
-        /* هدر */
         .app-header {
             height: 60px;
             background: var(--app-header-bg);
@@ -50,7 +49,6 @@
         .app-icon-btn:hover { background: var(--app-hover); color: var(--app-primary); }
         .app-title { font-size: 18px; font-weight: 700; color: var(--app-text); letter-spacing: -0.3px; }
 
-        /* لیست چت‌ها */
         .chat-list-container { 
             display: flex; 
             flex-direction: column; 
@@ -91,7 +89,6 @@
             box-shadow: 0 2px 6px rgba(60, 191, 138, 0.3);
         }
 
-        /* دکمه شناور مداد */
         .app-fab {
             position: fixed; left: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 18px;
             background: var(--app-primary); color: #fff; display: flex; align-items: center; justify-content: center;
@@ -101,7 +98,6 @@
         .app-fab:hover { transform: scale(1.08) rotate(-5deg); background: var(--app-primary-hover); }
         .app-fab:active { transform: scale(0.95); }
 
-        /* ===== مودال شیشه‌ای ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -226,7 +222,6 @@
         }
         .modal-close:hover { background: #e4e7eb; color: var(--app-text); }
 
-        /* حالت خالی لیست */
         .empty-state {
             text-align: center;
             padding: 80px 20px;
@@ -237,7 +232,6 @@
         .empty-state h3 { font-size: 17px; font-weight: 700; color: var(--app-text); margin-bottom: 6px; }
         .empty-state p { font-size: 13.5px; }
 
-        /* لودر */
         .loader-state {
             text-align: center;
             padding: 60px 20px;
@@ -257,7 +251,6 @@
 </head>
 <body>
 
-    <!-- هدر -->
     <div class='app-header'>
         <div class='app-header-right'>
             <div class='app-icon-btn' onclick="window.location.href='profile.html'">
@@ -270,7 +263,6 @@
         </div>
     </div>
 
-    <!-- لیست گفتگوها -->
     <div class='chat-list-container' id="chatList">
         <div class="loader-state">
             <div class="spinner"></div>
@@ -278,12 +270,10 @@
         </div>
     </div>
 
-    <!-- دکمه شناور مداد -->
     <div class='app-fab' onclick="openModal()">
         <span class='material-icons-round' style="font-size: 26px;">edit</span>
     </div>
 
-    <!-- مودال شیشه‌ای -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
         <div class="modal-content">
             <div class="modal-handle"></div>
@@ -293,8 +283,7 @@
             </div>
 
             <div class="modal-options">
-                <!-- گزینه ۱: خصوصی -->
-                <div class="modal-option" onclick="handleMenuClick('new-chat.html')">
+                <div class="modal-option" onclick="handleMenuClick('private')">
                     <div class="icon private">
                         <span class="material-icons-round">person</span>
                     </div>
@@ -305,7 +294,6 @@
                     <span class="arrow material-icons-round">chevron_left</span>
                 </div>
 
-                <!-- گزینه ۲: گروه -->
                 <div class="modal-option" onclick="handleMenuClick('group')">
                     <div class="icon group">
                         <span class="material-icons-round">group</span>
@@ -317,7 +305,6 @@
                     <span class="arrow material-icons-round">chevron_left</span>
                 </div>
 
-                <!-- گزینه ۳: کانال -->
                 <div class="modal-option" onclick="handleMenuClick('channel')">
                     <div class="icon channel">
                         <span class="material-icons-round">campaign</span>
@@ -342,7 +329,6 @@
             window.location.href = 'index.html';
         }
 
-        // ===== مودال =====
         function openModal() {
             document.getElementById('modalOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -359,81 +345,19 @@
             }
         }
 
-        // ===== عملکرد دکمه‌های مودال =====
         function handleMenuClick(target) {
             closeModal();
             setTimeout(() => {
-                if (target === 'new-chat.html') {
-                    window.location.href = 'new-chat.html';
+                if (target === 'private') {
+                    window.location.href = 'new-private.html';
                 } else if (target === 'group') {
-                    // ایجاد گروه جدید
-                    createGroupChat();
+                    window.location.href = 'new-group.html';
                 } else if (target === 'channel') {
-                    // ایجاد کانال جدید
-                    createChannelChat();
+                    window.location.href = 'new-channel.html';
                 }
             }, 250);
         }
 
-        // ===== ایجاد گروه =====
-        async function createGroupChat() {
-            const groupName = prompt('نام گروه را وارد کنید:');
-            if (!groupName) return;
-            
-            const chatId = 'group_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-            
-            try {
-                const response = await fetch(`${WORKER_URL}/api/create-chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        chatId, 
-                        userIds: [userId],
-                        chatName: groupName,
-                        chatType: 'group'
-                    })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    window.location.href = `chat.html?chatId=${chatId}`;
-                } else {
-                    alert('خطا در ایجاد گروه');
-                }
-            } catch (err) {
-                alert('خطا در ارتباط با سرور');
-            }
-        }
-
-        // ===== ایجاد کانال =====
-        async function createChannelChat() {
-            const channelName = prompt('نام کانال را وارد کنید:');
-            if (!channelName) return;
-            
-            const chatId = 'channel_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-            
-            try {
-                const response = await fetch(`${WORKER_URL}/api/create-chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        chatId, 
-                        userIds: [userId],
-                        chatName: channelName,
-                        chatType: 'channel'
-                    })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    window.location.href = `chat.html?chatId=${chatId}`;
-                } else {
-                    alert('خطا در ایجاد کانال');
-                }
-            } catch (err) {
-                alert('خطا در ارتباط با سرور');
-            }
-        }
-
-        // ===== جستجو =====
         function searchChats() {
             const query = prompt('جستجو در گفتگوها:');
             if (query && query.trim()) {
@@ -449,7 +373,6 @@
             }
         }
 
-        // ===== بارگذاری چت‌ها =====
         async function loadChats() {
             const list = document.getElementById('chatList');
             try {
@@ -465,7 +388,7 @@
                         const colorIdx = index % colors.length;
                         const isGroup = chat.chat_type === 'group';
                         const isChannel = chat.chat_type === 'channel';
-                        const icon = isGroup ? '👥' : isChannel ? '📢' : '';
+                        const icon = isGroup ? 'گ' : isChannel ? 'ک' : '';
                         
                         return `
                             <div class='chat-item' onclick="window.location.href='chat.html?chatId=${chat.chat_id}'">
@@ -505,11 +428,9 @@
             }
         }
 
-        // ===== شروع =====
         loadChats();
         setInterval(loadChats, 10000);
 
-        // بستن مودال با ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
