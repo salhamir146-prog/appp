@@ -34,41 +34,46 @@ async function handleApi(request, env, url) {
   try {
     const db = env.DB;
 
-    // ===== ۱. ارسال کد تایید =====
-    if (url.pathname === "/api/send-code" && request.method === "POST") {
-      const { phone } = await request.json();
-      if (!phone) {
-        return new Response(JSON.stringify({ success: false, message: "شماره موبایل وارد نشده است" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      }
+   // ===== ۱. ارسال کد تایید =====
+if (url.pathname === "/api/send-code" && request.method === "POST") {
+  const { phone } = await request.json();
+  if (!phone) {
+    return new Response(JSON.stringify({ success: false, message: "شماره موبایل وارد نشده است" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
 
-      const code = Math.floor(1000 + Math.random() * 9000).toString();
-      await env.TELEGRAM_KV.put(`otp:${phone}`, code, { expirationTtl: 300 });
+  // ✅ کد ثابت برای تست
+  const code = "45587";
+  await env.TELEGRAM_KV.put(`otp:${phone}`, code, { expirationTtl: 300 });
 
-      // ارسال پیامک (در صورت وجود API Key)
-      if (env.SMS_IR_API_KEY) {
-        try {
-          const smsResponse = await fetch("https://api.sms.ir/v1/send/verify", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-API-KEY": env.SMS_IR_API_KEY
-            },
-            body: JSON.stringify({
-              Mobile: phone,
-              TemplateId: Number(env.SMS_IR_TEMPLATE_ID || 828739),
-              Parameters: [{ Name: "OTP", Value: code }]
-            })
-          });
-          const smsResult = await smsResponse.json();
-          console.log('SMS result:', smsResult);
-        } catch (smsError) {
-          console.error('SMS error:', smsError);
-          // ادامه بده حتی اگر پیامک ارسال نشد
-        }
-      }
+  // (اختیاری) ارسال پیامک - اگر میخوای غیرفعال کنی، کل این بخش رو کامنت کن
+  // if (env.SMS_IR_API_KEY) {
+  //   try {
+  //     const smsResponse = await fetch("https://api.sms.ir/v1/send/verify", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "X-API-KEY": env.SMS_IR_API_KEY
+  //       },
+  //       body: JSON.stringify({
+  //         Mobile: phone,
+  //         TemplateId: Number(env.SMS_IR_TEMPLATE_ID || 828739),
+  //         Parameters: [{ Name: "OTP", Value: code }]
+  //       })
+  //     });
+  //     const smsResult = await smsResponse.json();
+  //     console.log('SMS result:', smsResult);
+  //   } catch (smsError) {
+  //     console.error('SMS error:', smsError);
+  //   }
+  // }
+
+  return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+}
 
       return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
