@@ -2,128 +2,484 @@
 <html lang='fa' dir='rtl'>
 <head>
     <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+    <title>پیام‌رسان اختصاصی - گفتگوها</title>
     <link href='https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/icon?family=Material+Icons+Round' rel='stylesheet'>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn;-webkit-tap-highlight-color:transparent}
         :root {
-            --tg-bg: #ffffff;
-            --tg-header-bg: #ffffff;
-            --tg-text: #222222;
-            --tg-subtext: #707579;
-            --tg-time: #999999;
-            --tg-hover: #f1f2f6;
-            --tg-border: #f0f0f0;
-            --tg-primary: #3CBF8A;
-            --tg-badge: #3CBF8A;
+            --app-bg: #f4f6f9;
+            --app-header-bg: #ffffff;
+            --app-text: #222222;
+            --app-subtext: #707579;
+            --app-time: #999999;
+            --app-hover: #f1f5f3;
+            --app-border: #e4e7eb;
+            --app-primary: #3CBF8A;
+            --app-primary-hover: #32a875;
+            --app-badge: #3CBF8A;
         }
-        body { background: var(--tg-bg); color: var(--tg-text); }
+        body { 
+            background: var(--app-bg); 
+            color: var(--app-text); 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-        /* هدر دقیق تلگرام */
-        .tg-header {
-            height: 56px; background: var(--tg-header-bg); display: flex; align-items: center; justify-content: space-between;
-            padding: 0 12px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--tg-border);
+        /* هدر */
+        .app-header {
+            height: 60px;
+            background: var(--app-header-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--app-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
-        .tg-header-right { display: flex; align-items: center; gap: 16px; }
-        .tg-icon-btn { 
+        .app-header-right { display: flex; align-items: center; gap: 14px; }
+        .app-icon-btn { 
             width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--tg-subtext); transition: background 0.2s;
+            cursor: pointer; color: var(--app-subtext); transition: all 0.2s ease;
         }
-        .tg-icon-btn:hover { background: var(--tg-hover); }
-        .tg-app-title { font-size: 20px; font-weight: 600; color: var(--tg-text); }
+        .app-icon-btn:hover { background: var(--app-hover); color: var(--app-primary); }
+        .app-title { font-size: 18px; font-weight: 700; color: var(--app-text); letter-spacing: -0.3px; }
 
         /* لیست چت‌ها */
-        .tg-chat-list { display: flex; flex-direction: column; }
-        .tg-chat-item {
-            display: flex; align-items: center; padding: 9px 12px; cursor: pointer;
-            position: relative; transition: background 0.2s;
+        .chat-list-container { 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
         }
-        .tg-chat-item:hover { background: var(--tg-hover); }
+        .chat-item {
+            display: flex; align-items: center; padding: 12px 16px; cursor: pointer;
+            position: relative; transition: background 0.2s ease;
+            background: #ffffff;
+            border-bottom: 1px solid var(--app-border);
+        }
+        .chat-item:hover { background: var(--app-hover); }
+        .chat-item:active { transform: scale(0.99); }
         
-        /* آواتار تلگرامی با استیکر آنلاین */
-        .tg-avatar-wrap { position: relative; margin-left: 14px; flex-shrink: 0; }
-        .tg-avatar { width: 54px; height: 54px; border-radius: 50%; background: #e0e0e0; background-size: cover; background-position: center; }
+        .avatar-wrap { position: relative; margin-left: 14px; flex-shrink: 0; }
+        .chat-avatar { 
+            width: 52px; height: 52px; border-radius: 50%; 
+            background-size: cover; background-position: center; 
+            display: flex; align-items: center; justify-content: center; 
+            color: #fff; font-size: 19px; font-weight: 700;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
         
-        .tg-chat-info { flex: 1; min-width: 0; border-bottom: 1px solid var(--tg-border); padding-bottom: 10px; }
-        .tg-chat-item:last-child .tg-chat-info { border-bottom: none; }
+        .chat-info { flex: 1; min-width: 0; }
+        .chat-row1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .chat-name { font-size: 15.5px; font-weight: 600; color: var(--app-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-time { font-size: 11.5px; color: var(--app-time); font-weight: 500; }
         
-        .tg-chat-row1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-        .tg-chat-name { font-size: 15px; font-weight: 600; color: var(--tg-text); }
-        .tg-chat-time { font-size: 12px; color: var(--tg-time); font-weight: 400; }
+        .chat-row2 { display: flex; justify-content: space-between; align-items: center; }
+        .chat-preview { font-size: 13.5px; color: var(--app-subtext); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
         
-        .tg-chat-row2 { display: flex; justify-content: space-between; align-items: center; }
-        .tg-chat-preview { font-size: 13.5px; color: var(--tg-subtext); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
-        
-        .tg-badge {
-            background: var(--tg-badge); color: #fff; font-size: 11px; font-weight: 600;
-            padding: 1px 6px; border-radius: 10px; min-width: 20px; text-align: center;
+        .app-badge {
+            background: var(--app-badge); color: #fff; font-size: 11px; font-weight: 600;
+            padding: 2px 7px; border-radius: 12px; min-width: 22px; text-align: center;
+            box-shadow: 0 2px 6px rgba(60, 191, 138, 0.3);
         }
 
-        /* دکمه مداد شناور تلگرام (FAB) */
-        .tg-fab {
-            position: fixed; left: 20px; bottom: 20px; width: 52px; height: 52px; border-radius: 16px;
-            background: var(--tg-primary); color: #fff; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(60, 191, 138, 0.35); cursor: pointer; z-index: 90;
+        /* دکمه شناور مداد */
+        .app-fab {
+            position: fixed; left: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 18px;
+            background: var(--app-primary); color: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px rgba(60, 191, 138, 0.4); cursor: pointer; z-index: 90;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .app-fab:hover { transform: scale(1.08) rotate(-5deg); background: var(--app-primary-hover); }
+        .app-fab:active { transform: scale(0.95); }
+
+        /* ===== مودال شیشه‌ای ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 200;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeInOverlay 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px 28px 0 0;
+            padding: 20px 20px 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.12);
+            border-top: 1.5px solid rgba(60, 191, 138, 0.25);
+            animation: slideUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            margin: 0 auto;
+        }
+
+        .modal-handle {
+            width: 42px;
+            height: 4px;
+            background: #d0d7de;
+            border-radius: 99px;
+            margin: 0 auto 18px;
+        }
+
+        .modal-title {
+            font-size: 16.5px;
+            font-weight: 700;
+            color: var(--app-text);
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .modal-title span { color: var(--app-primary); }
+
+        .modal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid var(--app-border);
+        }
+        .modal-option:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+            border-color: var(--app-primary);
+            box-shadow: 0 4px 15px rgba(60, 191, 138, 0.12);
+        }
+        .modal-option:active { transform: scale(0.97); }
+
+        .modal-option .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .modal-option .icon.private { background: rgba(60, 191, 138, 0.15); color: #3CBF8A; }
+        .modal-option .icon.group { background: rgba(33, 150, 243, 0.15); color: #2196F3; }
+        .modal-option .icon.channel { background: rgba(255, 152, 0, 0.15); color: #FF9800; }
+
+        .modal-option .info { flex: 1; }
+        .modal-option .info .title { font-size: 14.5px; font-weight: 600; color: var(--app-text); margin-bottom: 2px; }
+        .modal-option .info .desc { font-size: 12px; color: var(--app-subtext); }
+
+        .modal-option .arrow {
+            color: var(--app-subtext);
+            font-size: 20px;
             transition: transform 0.2s;
         }
-        .tg-fab:hover { transform: scale(1.05); }
+        .modal-option:hover .arrow { transform: translateX(-3px); color: var(--app-primary); }
+
+        .modal-close {
+            width: 100%;
+            padding: 14px;
+            margin-top: 14px;
+            background: #f0f2f5;
+            border: none;
+            border-radius: 14px;
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--app-subtext);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: Vazirmatn;
+        }
+        .modal-close:hover { background: #e4e7eb; color: var(--app-text); }
+
+        /* حالت خالی لیست */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--app-subtext);
+            margin: auto;
+        }
+        .empty-state .icon { font-size: 56px; display: block; margin-bottom: 14px; opacity: 0.8; }
+        .empty-state h3 { font-size: 17px; font-weight: 700; color: var(--app-text); margin-bottom: 6px; }
+        .empty-state p { font-size: 13.5px; }
+
+        /* لودر */
+        .loader-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--app-subtext);
+        }
+        .loader-state .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--app-border);
+            border-top-color: var(--app-primary);
+            border-radius: 50%;
+            animation: spinAnim 0.7s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spinAnim { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class='tg-header'>
-        <div class='tg-header-right'>
-            <div class='tg-icon-btn' onclick="window.location.href='profile.html'">
+    <!-- هدر -->
+    <div class='app-header'>
+        <div class='app-header-right'>
+            <div class='app-icon-btn' onclick="window.location.href='profile.html'">
                 <span class='material-icons-round'>menu</span>
             </div>
-            <div class='tg-app-title'>تلگرام</div>
+            <div class='app-title'>پیام‌رسان اختصاصی</div>
         </div>
-        <div class='tg-icon-btn' onclick="alert('🔍 جستجوی چت‌ها')">
+        <div class='app-icon-btn' onclick="searchChats()">
             <span class='material-icons-round'>search</span>
         </div>
     </div>
 
-    <div class='tg-chat-list' id="chatList">
-        <!-- چت‌ها از دیتابیس بارگذاری میشن -->
-        <div style="text-align:center;padding:40px;color:var(--tg-subtext);">⏳ در حال بارگذاری...</div>
+    <!-- لیست گفتگوها -->
+    <div class='chat-list-container' id="chatList">
+        <div class="loader-state">
+            <div class="spinner"></div>
+            <div>در حال بارگذاری...</div>
+        </div>
     </div>
 
-    <div class='tg-fab' onclick="window.location.href='new-chat.html'">
-        <span class='material-icons-round'>edit</span>
+    <!-- دکمه شناور مداد -->
+    <div class='app-fab' onclick="openModal()">
+        <span class='material-icons-round' style="font-size: 26px;">edit</span>
+    </div>
+
+    <!-- مودال شیشه‌ای -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            
+            <div class="modal-title">
+                انتخاب نوع <span>گفتگو</span>
+            </div>
+
+            <div class="modal-options">
+                <!-- گزینه ۱: خصوصی -->
+                <div class="modal-option" onclick="handleMenuClick('new-chat.html')">
+                    <div class="icon private">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div class="info">
+                        <div class="title">گفتگوی خصوصی</div>
+                        <div class="desc">شروع چت با جستجوی شماره تلفن</div>
+                    </div>
+                    <span class="arrow material-icons-round">chevron_left</span>
+                </div>
+
+                <!-- گزینه ۲: گروه -->
+                <div class="modal-option" onclick="handleMenuClick('group')">
+                    <div class="icon group">
+                        <span class="material-icons-round">group</span>
+                    </div>
+                    <div class="info">
+                        <div class="title">گروه جدید</div>
+                        <div class="desc">ساخت گروه چندنفره</div>
+                    </div>
+                    <span class="arrow material-icons-round">chevron_left</span>
+                </div>
+
+                <!-- گزینه ۳: کانال -->
+                <div class="modal-option" onclick="handleMenuClick('channel')">
+                    <div class="icon channel">
+                        <span class="material-icons-round">campaign</span>
+                    </div>
+                    <div class="info">
+                        <div class="title">کانال جدید</div>
+                        <div class="desc">ایجاد کانال برای انتشار محتوا</div>
+                    </div>
+                    <span class="arrow material-icons-round">chevron_left</span>
+                </div>
+            </div>
+
+            <button class="modal-close" onclick="closeModal()">انصراف</button>
+        </div>
     </div>
 
     <script>
         const WORKER_URL = "https://appp.salhamir146.workers.dev";
         const userId = localStorage.getItem('userId');
-        if (!userId) window.location.href = 'index.html';
+        
+        if (!userId) {
+            window.location.href = 'index.html';
+        }
 
-        // ===== بارگذاری چت‌ها از دیتابیس =====
+        // ===== مودال =====
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOutside(e) {
+            if (e.target === document.getElementById('modalOverlay')) {
+                closeModal();
+            }
+        }
+
+        // ===== عملکرد دکمه‌های مودال =====
+        function handleMenuClick(target) {
+            closeModal();
+            setTimeout(() => {
+                if (target === 'new-chat.html') {
+                    window.location.href = 'new-chat.html';
+                } else if (target === 'group') {
+                    // ایجاد گروه جدید
+                    createGroupChat();
+                } else if (target === 'channel') {
+                    // ایجاد کانال جدید
+                    createChannelChat();
+                }
+            }, 250);
+        }
+
+        // ===== ایجاد گروه =====
+        async function createGroupChat() {
+            const groupName = prompt('نام گروه را وارد کنید:');
+            if (!groupName) return;
+            
+            const chatId = 'group_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+            
+            try {
+                const response = await fetch(`${WORKER_URL}/api/create-chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        chatId, 
+                        userIds: [userId],
+                        chatName: groupName,
+                        chatType: 'group'
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.location.href = `chat.html?chatId=${chatId}`;
+                } else {
+                    alert('خطا در ایجاد گروه');
+                }
+            } catch (err) {
+                alert('خطا در ارتباط با سرور');
+            }
+        }
+
+        // ===== ایجاد کانال =====
+        async function createChannelChat() {
+            const channelName = prompt('نام کانال را وارد کنید:');
+            if (!channelName) return;
+            
+            const chatId = 'channel_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+            
+            try {
+                const response = await fetch(`${WORKER_URL}/api/create-chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        chatId, 
+                        userIds: [userId],
+                        chatName: channelName,
+                        chatType: 'channel'
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.location.href = `chat.html?chatId=${chatId}`;
+                } else {
+                    alert('خطا در ایجاد کانال');
+                }
+            } catch (err) {
+                alert('خطا در ارتباط با سرور');
+            }
+        }
+
+        // ===== جستجو =====
+        function searchChats() {
+            const query = prompt('جستجو در گفتگوها:');
+            if (query && query.trim()) {
+                const items = document.querySelectorAll('.chat-item');
+                items.forEach(item => {
+                    const name = item.querySelector('.chat-name')?.textContent || '';
+                    item.style.display = name.includes(query.trim()) ? 'flex' : 'none';
+                });
+            } else {
+                document.querySelectorAll('.chat-item').forEach(item => {
+                    item.style.display = 'flex';
+                });
+            }
+        }
+
+        // ===== بارگذاری چت‌ها =====
         async function loadChats() {
             const list = document.getElementById('chatList');
             try {
                 const response = await fetch(`${WORKER_URL}/api/get-chats?userId=${userId}`);
                 const data = await response.json();
 
-                if (data.success && data.chats.length > 0) {
-                    list.innerHTML = data.chats.map(chat => {
+                if (data.success && data.chats && data.chats.length > 0) {
+                    const colors = ['#3CBF8A', '#2E9AFE', '#9B59B6', '#E67E22', '#1ABC9C', '#E74C3C', '#2ECC71', '#3498DB'];
+                    
+                    list.innerHTML = data.chats.map((chat, index) => {
                         const name = chat.chat_name || chat.chat_id || 'گفتگو';
                         const initial = name.charAt(0).toUpperCase();
-                        const colors = ['#3CBF8A', '#52D39A', '#2CBF71', '#4CAF50', '#8BC34A'];
-                        const colorIndex = chat.chat_id.length % colors.length;
+                        const colorIdx = index % colors.length;
+                        const isGroup = chat.chat_type === 'group';
+                        const isChannel = chat.chat_type === 'channel';
+                        const icon = isGroup ? '👥' : isChannel ? '📢' : '';
+                        
                         return `
-                            <div class='tg-chat-item' onclick="window.location.href='chat.html?chatId=${chat.chat_id}'">
-                                <div class='tg-avatar-wrap'>
-                                    <div class='tg-avatar' style="background-color: ${colors[colorIndex]}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:700;">${initial}</div>
+                            <div class='chat-item' onclick="window.location.href='chat.html?chatId=${chat.chat_id}'">
+                                <div class='avatar-wrap'>
+                                    <div class='chat-avatar' style="background-color: ${colors[colorIdx]};">${icon || initial}</div>
                                 </div>
-                                <div class='tg-chat-info'>
-                                    <div class='tg-chat-row1'>
-                                        <div class='tg-chat-name'>${name}</div>
-                                        <div class='tg-chat-time'>${chat.message_count || 0} پیام</div>
+                                <div class='chat-info'>
+                                    <div class='chat-row1'>
+                                        <div class='chat-name'>${name}</div>
+                                        <div class='chat-time'>${chat.message_count || 'جدید'}</div>
                                     </div>
-                                    <div class='tg-chat-row2'>
-                                        <div class='tg-chat-preview'>${chat.last_message || 'شروع گفتگو...'}</div>
-                                        ${chat.unread_count ? `<div class='tg-badge'>${chat.unread_count}</div>` : ''}
+                                    <div class='chat-row2'>
+                                        <div class='chat-preview'>${chat.last_message || 'شروع گفتگو...'}</div>
+                                        ${chat.unread_count ? `<div class='app-badge'>${chat.unread_count}</div>` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -131,30 +487,32 @@
                     }).join('');
                 } else {
                     list.innerHTML = `
-                        <div style="text-align:center;padding:60px 20px;color:var(--tg-subtext);">
-                            <div style="font-size:48px;margin-bottom:12px;">💬</div>
-                            <div style="font-size:16px;font-weight:600;color:var(--tg-text);">هنوز چتی ندارید</div>
-                            <div style="font-size:13px;margin-top:4px;">با کلیک روی دکمه ✏️ پایین صفحه شروع کنید</div>
+                        <div class="empty-state">
+                            <span class="icon">💬</span>
+                            <h3>هنوز گفتگویی ندارید</h3>
+                            <p>روی دکمه ✏️ پایین صفحه کلیک کنید</p>
                         </div>
                     `;
                 }
             } catch (err) {
                 list.innerHTML = `
-                    <div style="text-align:center;padding:60px 20px;color:var(--tg-subtext);">
-                        <div style="font-size:48px;margin-bottom:12px;">⚠️</div>
-                        <div style="font-size:16px;font-weight:600;color:var(--tg-text);">خطا در بارگذاری</div>
-                        <div style="font-size:13px;margin-top:4px;">لطفاً دوباره تلاش کنید</div>
+                    <div class="empty-state">
+                        <span class="icon">⚠️</span>
+                        <h3>خطا در بارگذاری</h3>
+                        <p>لطفاً دوباره تلاش کنید</p>
                     </div>
                 `;
-                console.error('Error loading chats:', err);
             }
         }
 
-        // ===== بارگذاری خودکار =====
+        // ===== شروع =====
         loadChats();
-
-        // بارگذاری مجدد هر ۱۰ ثانیه
         setInterval(loadChats, 10000);
+
+        // بستن مودال با ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
     </script>
 </body>
 </html>
