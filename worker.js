@@ -286,3 +286,32 @@ async function handleApi(request, env, url) {
     });
   }
 }
+// ===== ۹. به‌روزرسانی کاربر =====
+if (url.pathname === "/api/update-user" && request.method === "POST") {
+  const { userId, name, username, bio } = await request.json();
+
+  await db.prepare(
+    `UPDATE users SET name = ?, username = ?, bio = ? WHERE id = ?`
+  ).bind(name, username, bio, userId).run();
+
+  return new Response(JSON.stringify({ success: true, message: "پروفایل به‌روز شد" }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+}
+
+// ===== ۱۰. آپلود عکس پروفایل =====
+if (url.pathname === "/api/upload-avatar" && request.method === "POST") {
+  const formData = await request.formData();
+  const file = formData.get('avatar');
+  const userId = formData.get('userId');
+
+  // ذخیره در KV (برای عکس‌های کوچک)
+  const arrayBuffer = await file.arrayBuffer();
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+  
+  await env.TELEGRAM_KV.put(`avatar:${userId}`, base64);
+
+  return new Response(JSON.stringify({ success: true, message: "عکس آپلود شد" }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+}
