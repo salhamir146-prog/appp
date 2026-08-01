@@ -6,6 +6,28 @@ export default {
     if (url.pathname.startsWith('/api/')) {
       return handleApi(request, env, url);
     }
+    // ===== ۱۳. دریافت کاربر با شماره تلفن =====
+if (url.pathname === "/api/get-user-by-phone" && request.method === "GET") {
+  const phone = url.searchParams.get('phone');
+  
+  if (!phone) {
+    return new Response(JSON.stringify({ success: false, message: "شماره وارد نشده" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
+  const user = await db.prepare(
+    "SELECT id, name, phone, avatar_url FROM users WHERE phone = ?"
+  ).bind(phone).first();
+
+  return new Response(JSON.stringify({ 
+    success: true, 
+    user: user || null 
+  }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+}
 // ===== ۱۲. دریافت لیست همه کاربران =====
 if (url.pathname === "/api/get-users" && request.method === "GET") {
   const users = await db.prepare(
