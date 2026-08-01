@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تنظیمات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn}
+        body{background:#f7fbf8;padding-bottom:30px}
+        .header{background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);position:sticky;top:0;z-index:100}
+        .header .back{font-size:24px;cursor:pointer;color:#555}
+        .header h1{font-size:18px;font-weight:600;flex:1}
+        .settings-list{padding:12px}
+        .settings-item{display:flex;align-items:center;background:#fff;padding:14px 16px;border-radius:14px;margin-bottom:6px;cursor:pointer;border:1px solid #f0f0f0;transition:background 0.2s}
+        .settings-item:active{background:#f5f5f5}
+        .settings-item .icon{font-size:22px;color:#555;margin-left:14px}
+        .settings-item .info{flex:1}
+        .settings-item .info .title{font-size:14px;font-weight:500;color:#222}
+        .settings-item .info .desc{font-size:11px;color:#888}
+        .settings-item .arrow{color:#bbb}
+        .settings-item .toggle{position:relative;width:44px;height:24px;background:#ddd;border-radius:12px;cursor:pointer;transition:background 0.3s}
+        .settings-item .toggle.active{background:#3CBF8A}
+        .settings-item .toggle .slider{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s}
+        .settings-item .toggle.active .slider{transform:translateX(20px)}
+        .section-title{font-size:13px;font-weight:600;color:#3CBF8A;padding:16px 12px 6px 12px}
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+        .modal.active{display:flex}
+        .modal-content{background:#fff;border-radius:20px;padding:24px;width:90%;max-width:360px}
+        .modal-content h3{font-size:18px;margin-bottom:12px}
+        .modal-actions{display:flex;gap:10px;margin-top:16px}
+        .modal-actions button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+        .modal-actions .save{background:#3CBF8A;color:#fff}
+        .modal-actions .cancel{background:#f5f5f5;color:#555}
+        .modal-content select{width:100%;padding:10px;border:2px solid #e8e8e8;border-radius:10px;font-size:14px;margin-bottom:10px}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="back material-icons-round" onclick="window.location.href='profile.html'">arrow_forward</span>
+        <h1>⚙️ تنظیمات</h1>
+    </div>
+
+    <div class="settings-list">
+        <div class="section-title">🛡️ حریم خصوصی و امنیت</div>
+
+        <div class="settings-item" onclick="toggleItem(this)">
+            <span class="icon material-icons-round">lock</span>
+            <div class="info">
+                <div class="title">قفل برنامه</div>
+                <div class="desc">رمز عبور / اثر انگشت</div>
+            </div>
+            <div class="toggle" id="appLock">
+                <div class="slider"></div>
+            </div>
+        </div>
+
+        <div class="settings-item" onclick="showModal('lastSeen')">
+            <span class="icon material-icons-round">visibility</span>
+            <div class="info">
+                <div class="title">آخرین بازدید</div>
+                <div class="desc" id="lastSeenDesc">همه</div>
+            </div>
+            <span class="arrow material-icons-round">chevron_left</span>
+        </div>
+
+        <div class="settings-item" onclick="showModal('profilePhoto')">
+            <span class="icon material-icons-round">photo</span>
+            <div class="info">
+                <div class="title">عکس پروفایل</div>
+                <div class="desc" id="profilePhotoDesc">همه</div>
+            </div>
+            <span class="arrow material-icons-round">chevron_left</span>
+        </div>
+
+        <div class="section-title">🎨 ظاهر</div>
+
+        <div class="settings-item" onclick="toggleDarkMode()">
+            <span class="icon material-icons-round">dark_mode</span>
+            <div class="info">
+                <div class="title">حالت شب</div>
+                <div class="desc">رنگ‌های تیره برای چشم</div>
+            </div>
+            <div class="toggle" id="darkModeToggle">
+                <div class="slider"></div>
+            </div>
+        </div>
+
+        <div class="settings-item" onclick="showModal('color')">
+            <span class="icon material-icons-round">palette</span>
+            <div class="info">
+                <div class="title">رنگ اصلی</div>
+                <div class="desc" id="colorDesc">سبز</div>
+            </div>
+            <span class="arrow material-icons-round">chevron_left</span>
+        </div>
+
+        <div class="section-title">🌐 زبان</div>
+
+        <div class="settings-item" onclick="showModal('language')">
+            <span class="icon material-icons-round">language</span>
+            <div class="info">
+                <div class="title">زبان برنامه</div>
+                <div class="desc" id="languageDesc">فارسی</div>
+            </div>
+            <span class="arrow material-icons-round">chevron_left</span>
+        </div>
+
+        <div class="section-title">💾 ذخیره‌سازی</div>
+
+        <div class="settings-item" onclick="showModal('storage')">
+            <span class="icon material-icons-round">storage</span>
+            <div class="info">
+                <div class="title">مدیریت فایل‌ها</div>
+                <div class="desc">۳۲۵ مگابایت از ۱ گیگابایت</div>
+            </div>
+            <span class="arrow material-icons-round">chevron_left</span>
+        </div>
+
+        <div class="section-title">ℹ️ درباره</div>
+
+        <div class="settings-item" onclick="alert('نسخه 1.0.0\nساخته شده با ☁️ Cloudflare')">
+            <span class="icon material-icons-round">info</span>
+            <div class="info">
+                <div class="title">درباره برنامه</div>
+                <div class="desc">نسخه 1.0.0</div>
+            </div>
+            <span class="arrow material-icons-round">chevron_left</span>
+        </div>
+    </div>
+
+    <!-- مودال‌ها -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">تنظیمات</h3>
+            <div id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeModal()">انصراف</button>
+                <button class="save" onclick="saveModal()">ذخیره</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== حالت شب =====
+        function toggleDarkMode() {
+            const toggle = document.getElementById('darkModeToggle');
+            toggle.classList.toggle('active');
+            document.body.style.background = toggle.classList.contains('active') ? '#121212' : '#f7fbf8';
+            document.querySelectorAll('.settings-item, .header, .modal-content').forEach(el => {
+                el.style.background = toggle.classList.contains('active') ? '#1e1e1e' : '#fff';
+                el.style.color = toggle.classList.contains('active') ? '#f1f1f1' : '#222';
+            });
+        }
+
+        // ===== مودال‌ها =====
+        let modalType = '';
+
+        function showModal(type) {
+            modalType = type;
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            const options = {
+                'lastSeen': { title: 'آخرین بازدید', values: ['همه', 'مخاطبین', 'هیچ‌کس'] },
+                'profilePhoto': { title: 'عکس پروفایل', values: ['همه', 'مخاطبین', 'هیچ‌کس'] },
+                'color': { title: 'رنگ اصلی', values: ['سبز', 'آبی', 'بنفش', 'قرمز', 'نارنجی'] },
+                'language': { title: 'زبان', values: ['فارسی', 'English', 'العربية'] },
+                'storage': { title: 'مدیریت فایل‌ها', values: ['حذف فایل‌های قدیمی', 'افزایش فضا', 'مشاهده فایل‌ها'] }
+            };
+
+            const data = options[type];
+            if (!data) return;
+
+            title.textContent = data.title;
+            body.innerHTML = `
+                <select id="modalSelect">
+                    ${data.values.map(v => `<option value="${v}">${v}</option>`).join('')}
+                </select>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function saveModal() {
+            const value = document.getElementById('modalSelect').value;
+            const descMap = {
+                'lastSeen': document.getElementById('lastSeenDesc'),
+                'profilePhoto': document.getElementById('profilePhotoDesc'),
+                'color': document.getElementById('colorDesc'),
+                'language': document.getElementById('languageDesc')
+            };
+
+            if (descMap[modalType]) {
+                descMap[modalType].textContent = value;
+            }
+
+            closeModal();
+            alert(`تنظیمات ${modalType} با موفقیت تغییر کرد!`);
+        }
+
+        // ===== دکمه‌های toggle =====
+        function toggleItem(el) {
+            const toggle = el.querySelector('.toggle');
+            if (toggle) {
+                toggle.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+</html>
