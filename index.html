@@ -1,464 +1,486 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>پیام‌رسان</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <title>پیام‌رسان نورا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn;-webkit-tap-highlight-color:transparent}
+        :root {
+            --app-bg: #f4f6f9;
+            --app-header-bg: #ffffff;
+            --app-text: #222222;
+            --app-subtext: #707579;
+            --app-time: #999999;
+            --app-hover: #f1f5f3;
+            --app-border: #e4e7eb;
+            --app-primary: #3CBF8A;
+            --app-primary-hover: #32a875;
+            --app-badge: #3CBF8A;
+            --app-danger: #e53935;
         }
-        
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background: #0a0a0f;
+        body { 
+            background: var(--app-bg); 
+            color: var(--app-text); 
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
+            flex-direction: column;
             overflow: hidden;
         }
-        
-        /* پس‌زمینه گرادینت متحرک */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at 20% 50%, rgba(60, 191, 138, 0.15) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 50%, rgba(36, 129, 204, 0.10) 0%, transparent 60%);
-            z-index: 0;
-        }
-        
-        /* دایره‌های تزئینی پشت سر */
-        .bg-circles {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        
-        .bg-circles div {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.04;
-            animation: floatCircle 20s ease-in-out infinite;
-        }
-        
-        .bg-circles div:nth-child(1) {
-            width: 400px;
-            height: 400px;
-            background: #3CBF8A;
-            top: -100px;
-            right: -100px;
-            animation-delay: 0s;
-        }
-        
-        .bg-circles div:nth-child(2) {
-            width: 300px;
-            height: 300px;
-            background: #2481cc;
-            bottom: -50px;
-            left: -50px;
-            animation-delay: -7s;
-        }
-        
-        .bg-circles div:nth-child(3) {
-            width: 200px;
-            height: 200px;
-            background: #8b5cf6;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: -14s;
-        }
-        
-        @keyframes floatCircle {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-        
-        .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 420px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 32px;
-            padding: 40px 28px 32px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        .logo-section {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-        
-        .logo-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, #3CBF8A, #2ea87a);
-            border-radius: 24px;
-            font-size: 36px;
-            margin-bottom: 12px;
-            box-shadow: 0 8px 30px rgba(60, 191, 138, 0.3);
-            transform: rotate(-6deg);
-        }
-        
-        .logo-title {
-            font-size: 26px;
-            font-weight: 900;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-        
-        .logo-title span {
-            color: #3CBF8A;
-        }
-        
-        .logo-sub {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.4);
-            font-weight: 300;
-            margin-top: 2px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-        
-        .phone-input-wrapper {
-            display: flex;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s;
-        }
-        
-        .phone-input-wrapper:focus-within {
-            border-color: rgba(60, 191, 138, 0.5);
-            box-shadow: 0 0 0 4px rgba(60, 191, 138, 0.08);
-        }
-        
-        .country-code {
-            padding: 16px 14px;
-            font-size: 16px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            background: rgba(255, 255, 255, 0.04);
-            border-left: 1px solid rgba(255, 255, 255, 0.06);
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .country-code .flag {
-            font-size: 20px;
-        }
-        
-        .phone-input {
+
+        /* نماها (صفحات داخلی تک‌فایلی) */
+        .view-section {
+            display: none;
+            flex-direction: column;
             flex: 1;
-            padding: 16px 14px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            font-weight: 500;
-            background: transparent;
-            color: #fff;
-            direction: ltr;
-            letter-spacing: 0.5px;
+            height: 100vh;
+            overflow: hidden;
         }
-        
-        .phone-input::placeholder {
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 300;
+        .view-section.active {
+            display: flex;
         }
-        
-        .checkbox-group {
+
+        /* هدر مشترک */
+        .app-header {
+            height: 64px;
+            background: var(--app-header-bg);
             display: flex;
             align-items: center;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--app-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             gap: 12px;
-            padding: 6px 4px;
-            margin: 4px 0 12px;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #3CBF8A;
-            cursor: pointer;
-            border-radius: 6px;
             flex-shrink: 0;
         }
-        
-        .checkbox-group label {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            font-weight: 400;
+        .app-icon-btn { 
+            width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--app-subtext); transition: all 0.2s ease; flex-shrink: 0;
         }
-        
-        .checkbox-group label span {
-            color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #3CBF8A, #2ea87a);
-            color: #fff;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Vazirmatn', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(60, 191, 138, 0.3);
-        }
-        
-        .btn:active {
-            transform: scale(0.97);
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        
-        .btn .loader {
-            display: none;
-            width: 22px;
-            height: 22px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            margin: 0 auto;
-        }
-        
-        .btn.loading .loader {
-            display: block;
-        }
-        
-        .btn.loading .btn-text {
-            display: none;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .error {
-            color: #ff6b6b;
-            font-size: 12px;
-            margin-top: 8px;
-            display: none;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .error.show {
+        .app-icon-btn:hover { background: var(--app-hover); color: var(--app-primary); }
+
+        .search-box-wrap {
+            flex: 1;
+            background: #f1f3f5;
+            border-radius: 22px;
+            height: 44px;
             display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+        .search-box-wrap:hover { background: #e9ecef; }
+        .search-box-wrap .search-icon { color: var(--app-subtext); font-size: 22px; }
+        .search-box-wrap .search-input-placeholder { color: var(--app-subtext); font-size: 14.5px; user-select: none; }
+
+        /* لیست چت‌ها */
+        .chat-list-container { 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            padding: 12px;
+            gap: 10px;
+            overflow-y: auto;
         }
         
-        .error .material-icons-round {
-            font-size: 16px;
+        .chat-item {
+            display: flex; 
+            align-items: center; 
+            padding: 12px 16px; 
+            cursor: pointer;
+            position: relative; 
+            transition: all 0.25s ease;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        .chat-item:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(60, 191, 138, 0.1);
+            border-color: rgba(60, 191, 138, 0.2);
+        }
+        .chat-item:active { transform: scale(0.98); }
+        
+        .avatar-wrap { position: relative; margin-left: 14px; flex-shrink: 0; }
+        .chat-avatar { 
+            width: 52px; height: 52px; border-radius: 50%; 
+            background-size: cover; background-position: center; 
+            display: flex; align-items: center; justify-content: center; 
+            color: #fff; font-size: 19px; font-weight: 700;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
         }
         
-        .terms {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.25);
-            text-align: center;
-            margin-top: 24px;
-            line-height: 1.8;
-        }
+        .chat-info { flex: 1; min-width: 0; }
+        .chat-row1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .chat-name { font-size: 15.5px; font-weight: 600; color: var(--app-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-time { font-size: 11.5px; color: var(--app-time); font-weight: 500; }
         
-        .terms a {
-            color: rgba(255, 255, 255, 0.4);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
+        .chat-row2 { display: flex; justify-content: space-between; align-items: center; }
+        .chat-preview { font-size: 13.5px; color: var(--app-subtext); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
         
-        .terms a:hover {
-            color: rgba(255, 255, 255, 0.7);
+        .app-badge {
+            background: var(--app-badge); color: #fff; font-size: 11px; font-weight: 600;
+            padding: 2px 7px; border-radius: 12px; min-width: 22px; text-align: center;
+            box-shadow: 0 2px 6px rgba(60, 191, 138, 0.3);
         }
+
+        /* دکمه شناور مداد (راست) */
+        .app-fab {
+            position: fixed; right: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 18px;
+            background: var(--app-primary); color: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px rgba(60, 191, 138, 0.4); cursor: pointer; z-index: 90;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .app-fab:hover { transform: scale(1.08) rotate(5deg); background: var(--app-primary-hover); }
+        .app-fab:active { transform: scale(0.95); }
+
+        /* مدال پایین صفحه (شروع چت/گروه/کانال) */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px); z-index: 200; align-items: flex-end; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(25px);
+            border-radius: 28px 28px 0 0; padding: 20px 20px 32px; width: 100%; max-width: 480px;
+            box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.12); border-top: 1.5px solid rgba(60, 191, 138, 0.25);
+        }
+        .modal-handle { width: 42px; height: 4px; background: #d0d7de; border-radius: 99px; margin: 0 auto 18px; }
+        .modal-title { font-size: 16.5px; font-weight: 700; color: var(--app-text); text-align: center; margin-bottom: 20px; }
+        .modal-title span { color: var(--app-primary); }
+        .modal-options { display: flex; flex-direction: column; gap: 10px; }
+        .modal-option {
+            display: flex; align-items: center; gap: 16px; padding: 14px 16px;
+            background: #f8fafc; border-radius: 16px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--app-border);
+        }
+        .modal-option:hover { background: #ffffff; border-color: var(--app-primary); box-shadow: 0 4px 15px rgba(60, 191, 138, 0.12); }
+        .modal-option .icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+        .modal-option .icon.private { background: rgba(60, 191, 138, 0.15); color: #3CBF8A; }
+        .modal-option .icon.group { background: rgba(33, 150, 243, 0.15); color: #2196F3; }
+        .modal-option .icon.channel { background: rgba(255, 152, 0, 0.15); color: #FF9800; }
+        .modal-option .info { flex: 1; }
+        .modal-option .info .title { font-size: 14.5px; font-weight: 600; color: var(--app-text); margin-bottom: 2px; }
+        .modal-option .info .desc { font-size: 12px; color: var(--app-subtext); }
+
+        /* صفحه چت */
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+        .message { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+        .message.sent { background: var(--app-primary); color: #fff; align-self: flex-end; border-bottom-left-radius: 4px; }
+        .message.received { background: #fff; color: #222; align-self: flex-start; border-bottom-right-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .message .time { font-size: 10px; opacity: 0.6; margin-top: 4px; display: block; text-align: left; }
         
-        /* حالت تاریک خودکار */
-        @media (prefers-color-scheme: light) {
-            body { background: #f0f2f5; }
-            body::before { display: none; }
-            .bg-circles div { opacity: 0.1; }
-            .container { background: rgba(255, 255, 255, 0.8); border-color: rgba(0, 0, 0, 0.05); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08); }
-            .logo-title { color: #1a1a2e; }
-            .logo-sub { color: rgba(0, 0, 0, 0.3); }
-            .form-group label { color: rgba(0, 0, 0, 0.4); }
-            .phone-input-wrapper { background: rgba(0, 0, 0, 0.03); border-color: rgba(0, 0, 0, 0.06); }
-            .phone-input-wrapper:focus-within { border-color: #3CBF8A; box-shadow: 0 0 0 4px rgba(60, 191, 138, 0.12); }
-            .country-code { color: rgba(0, 0, 0, 0.6); background: rgba(0, 0, 0, 0.02); border-color: rgba(0, 0, 0, 0.06); }
-            .phone-input { color: #1a1a2e; }
-            .phone-input::placeholder { color: rgba(0, 0, 0, 0.2); }
-            .checkbox-group label { color: rgba(0, 0, 0, 0.5); }
-            .terms { color: rgba(0, 0, 0, 0.25); }
-            .terms a { color: rgba(0, 0, 0, 0.4); }
+        .chat-input-area { display: flex; gap: 10px; padding: 12px; background: #fff; border-top: 1px solid #eee; flex-shrink: 0; }
+        .chat-input-area input { flex: 1; padding: 12px 16px; border: 2px solid #e8e8e8; border-radius: 14px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .chat-input-area input:focus { border-color: var(--app-primary); }
+        .chat-input-area button { padding: 12px 20px; background: var(--app-primary); color: #fff; border: none; border-radius: 14px; font-size: 16px; cursor: pointer; font-weight: 600; }
+
+        /* منوی سه‌نقطه تلگرامی */
+        .telegram-dropdown {
+            display: none; position: absolute; top: 60px; left: 16px; background: #ffffff;
+            border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); width: 220px; z-index: 1000; overflow: hidden; border: 1px solid rgba(0,0,0,0.04);
         }
-        
-        @media (max-width: 420px) {
-            .container { padding: 28px 18px 24px; border-radius: 24px; }
-            .logo-icon { width: 60px; height: 60px; font-size: 28px; }
-            .logo-title { font-size: 22px; }
-        }
+        .telegram-dropdown.active { display: block; }
+        .dropdown-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 14px; color: #333; cursor: pointer; transition: background 0.15s; }
+        .dropdown-item:hover { background: #f4f6f8; }
+        .dropdown-item span.material-icons-round { font-size: 20px; color: #666; }
+        .dropdown-item.danger { color: var(--app-danger); }
+        .dropdown-item.danger span.material-icons-round { color: var(--app-danger); }
+        .dropdown-divider { height: 1px; background: #eee; margin: 4px 0; }
+
+        /* حالات عمومی */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--app-subtext); margin: auto; }
+        .empty-state .icon { font-size: 50px; display: block; margin-bottom: 12px; }
+        .loader-state { text-align: center; padding: 40px; }
+        .spinner { width: 30px; height: 30px; border: 3px solid var(--app-border); border-top-color: var(--app-primary); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body>
+<body onclick="closeDropdownOnOutside(event)">
 
-<div class="bg-circles">
-    <div></div>
-    <div></div>
-    <div></div>
-</div>
+    <!-- نما ۱: لیست گفتگوهای نورا -->
+    <div id="chatsView" class="view-section active">
+        <div class="app-header">
+            <div class="app-icon-btn" onclick="alert('تنظیمات پروفایل نورا')">
+                <span class='material-icons-round'>menu</span>
+            </div>
+            <div class="search-box-wrap" onclick="searchChats()">
+                <span class='material-icons-round search-icon'>search</span>
+                <span class='search-input-placeholder'>جستجو در نورا...</span>
+            </div>
+        </div>
 
-<div class="container">
-    <div class="logo-section">
-        <div class="logo-icon">✈️</div>
-        <div class="logo-title">پیام<span>رسان</span></div>
-        <div class="logo-sub">ارتباطی امن و سریع</div>
-    </div>
+        <div class='chat-list-container' id="chatList">
+            <div class="loader-state"><div class="spinner"></div></div>
+        </div>
 
-    <div id="errorMsg" class="error">
-        <span class="material-icons-round">error_outline</span>
-        <span id="errorText">خطا</span>
-    </div>
-
-    <div class="form-group">
-        <label>📱 شماره تلفن</label>
-        <div class="phone-input-wrapper">
-            <span class="country-code">
-                <span class="flag">🇮🇷</span> +98
-            </span>
-            <input type="tel" class="phone-input" id="phoneInput" placeholder="912 345 6789" maxlength="10" dir="ltr" autofocus>
+        <div class='app-fab' onclick="openModal()">
+            <span class='material-icons-round' style="font-size: 26px;">edit</span>
         </div>
     </div>
 
-    <div class="checkbox-group">
-        <input type="checkbox" id="syncContacts" checked>
-        <label for="syncContacts">
-            🔄 هماهنگ‌سازی مخاطبین
-            <span>· پیشنهادی</span>
-        </label>
+    <!-- نما ۲: صفحه چت / مدیریت گروه و کانال -->
+    <div id="chatView" class="view-section">
+        <div class="app-header">
+            <span class="app-icon-btn material-icons-round" onclick="switchView('chatsView')">arrow_forward</span>
+            <div style="flex:1; cursor:pointer;" onclick="openChatInfo()">
+                <div class="chat-name" id="activeChatName">نام گفتگو</div>
+                <div class="chat-status" id="activeChatStatus">آنلاین</div>
+            </div>
+            <div class="app-icon-btn material-icons-round" onclick="toggleMenu(event)">more_vert</div>
+
+            <!-- منوی سه‌نقطه تلگرامی پیشرفته -->
+            <div class="telegram-dropdown" id="telegramMenu">
+                <div class="dropdown-item" onclick="viewProfile()">
+                    <span class="material-icons-round">person</span>
+                    <span>اطلاعات و تنظیمات</span>
+                </div>
+                <div class="dropdown-item" onclick="toggleMute()">
+                    <span class="material-icons-round" id="muteIcon">notifications_off</span>
+                    <span id="muteText">بی‌صدا کردن</span>
+                </div>
+                <div class="dropdown-item" onclick="archiveChat()">
+                    <span class="material-icons-round">archive</span>
+                    <span>بایگانی گفتگو</span>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item danger" onclick="clearMessages()">
+                    <span class="material-icons-round">delete_sweep</span>
+                    <span>پاک کردن پیام‌ها</span>
+                </div>
+                <div class="dropdown-item danger" onclick="blockUser()">
+                    <span class="material-icons-round">block</span>
+                    <span>مسدود کردن</span>
+                </div>
+                <div class="dropdown-item danger" onclick="deleteChat()">
+                    <span class="material-icons-round">delete</span>
+                    <span>حذف گفتگو</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="messagesContainer">
+            <div class="loader-state"><div class="spinner"></div></div>
+        </div>
+
+        <div class="chat-input-area" id="chatInputArea">
+            <input type="text" id="messageInput" placeholder="پیام خود را در نورا بنویسید..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">📤</button>
+        </div>
     </div>
 
-    <button class="btn" id="continueBtn">
-        <span class="btn-text">ادامه</span>
-        <div class="loader"></div>
-    </button>
-
-    <div class="terms">
-        با ادامه، شما با <a href="#">شرایط خدمات</a> و <a href="#">سیاست حریم خصوصی</a> موافقت می‌کنید.
+    <!-- مدال ساخت گفتگو/گروه/کانال -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-title">شروع در پیام‌رسان <span>نورا</span></div>
+            <div class="modal-options">
+                <div class="modal-option" onclick="handleMenuClick('private')">
+                    <div class="icon private"><span class="material-icons-round">person</span></div>
+                    <div class="info">
+                        <div class="title">گفتگوی خصوصی</div>
+                        <div class="desc">چت شخصی با مخاطبین</div>
+                    </div>
+                </div>
+                <div class="modal-option" onclick="handleMenuClick('group')">
+                    <div class="icon group"><span class="material-icons-round">group</span></div>
+                    <div class="info">
+                        <div class="title">گروه جدید</div>
+                        <div class="desc">لینک دعوت، مدیریت اعضا، تغییر نام</div>
+                    </div>
+                </div>
+                <div class="modal-option" onclick="handleMenuClick('channel')">
+                    <div class="icon channel"><span class="material-icons-round">campaign</span></div>
+                    <div class="info">
+                        <div class="title">کانال جدید</div>
+                        <div class="desc">تنظیمات کانال و انتشار محتوا</div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="closeModal()" style="width:100%; padding:12px; margin-top:14px; background:#f0f2f5; border:none; border-radius:14px; font-weight:600; cursor:pointer;">انصراف</button>
+        </div>
     </div>
-</div>
 
-<script>
-    const WORKER_URL = "https://appp.salhamir146.workers.dev";
-    const phoneInput = document.getElementById('phoneInput');
-    const continueBtn = document.getElementById('continueBtn');
-    const errorMsg = document.getElementById('errorMsg');
-    const errorText = document.getElementById('errorText');
-    const syncContacts = document.getElementById('syncContacts');
-
-    phoneInput.addEventListener('input', function() {
-        this.value = this.value.replace(/\D/g, '').slice(0, 10);
-        errorMsg.classList.remove('show');
-    });
-
-    continueBtn.addEventListener('click', async function() {
-        const phone = phoneInput.value.trim();
-        
-        if (phone.length < 10) {
-            errorText.textContent = 'شماره تلفن ۱۰ رقمی را کامل وارد کنید';
-            errorMsg.classList.add('show');
-            return;
+    <script>
+        const WORKER_URL = "https://appp.salhamir146.workers.dev";
+        let currentUserId = localStorage.getItem('userId');
+        if (!currentUserId) {
+            currentUserId = 'user_' + Math.random().toString(36).substring(2, 9);
+            localStorage.setItem('userId', currentUserId);
         }
 
-        this.classList.add('loading');
-        this.disabled = true;
-        errorMsg.classList.remove('show');
+        let activeChatId = null;
+        let activeChatType = 'private';
 
-        try {
-            const response = await fetch(`${WORKER_URL}/api/send-code`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    phone: '98' + phone,
-                    syncContacts: syncContacts.checked 
-                })
-            });
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            if(viewId === 'chatsView') loadChats();
+        }
 
-            const data = await response.json();
+        function openModal() { document.getElementById('modalOverlay').classList.add('active'); }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
 
-            if (data.success) {
-                localStorage.setItem('userPhone', '98' + phone);
-                localStorage.setItem('syncContacts', syncContacts.checked);
-                // انیمیشن خروج
-                document.querySelector('.container').style.animation = 'slideUp 0.4s reverse';
-                setTimeout(() => {
-                    window.location.href = 'verify.html';
-                }, 400);
-            } else {
-                errorText.textContent = data.message || 'خطا در ارسال کد';
-                errorMsg.classList.add('show');
-                this.classList.remove('loading');
-                this.disabled = false;
+        function handleMenuClick(type) {
+            closeModal();
+            if (type === 'private') {
+                const phone = prompt('شماره تلفن مخاطب را وارد کنید:');
+                if(phone) startChat(phone, 'private');
+            } else if (type === 'group') {
+                const gName = prompt('نام گروه جدید را وارد کنید:');
+                if(gName) startChat(gName, 'group');
+            } else if (type === 'channel') {
+                const cName = prompt('نام کانال جدید را وارد کنید:');
+                if(cName) startChat(cName, 'channel');
             }
-        } catch (err) {
-            errorText.textContent = 'خطا در ارتباط با سرور';
-            errorMsg.classList.add('show');
-            this.classList.remove('loading');
-            this.disabled = false;
         }
-    });
 
-    phoneInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') continueBtn.click();
-    });
-</script>
+        async function startChat(name, type) {
+            const chatId = 'nora_' + Math.random().toString(36).substring(2, 8);
+            // ثبت اولیه در سرور یا ورود مستقیم
+            openChatWindow(chatId, name, type);
+        }
+
+        function openChatWindow(chatId, chatName, chatType) {
+            activeChatId = chatId;
+            activeChatType = chatType;
+            document.getElementById('activeChatName').textContent = chatName;
+            
+            const statusEl = document.getElementById('activeChatStatus');
+            const inputArea = document.getElementById('chatInputArea');
+
+            if (chatType === 'group') {
+                statusEl.textContent = 'تنظیمات گروه (لینک دعوت، اعضا، تغییر نام)';
+                inputArea.style.display = 'flex';
+            } else if (chatType === 'channel') {
+                statusEl.textContent = 'مدیریت کانال (انتشار محتوا)';
+                inputArea.style.display = 'flex';
+            } else {
+                statusEl.textContent = 'آنلاین در نورا';
+                inputArea.style.display = 'flex';
+            }
+
+            switchView('chatView');
+            loadMessages();
+        }
+
+        function openChatInfo() {
+            if (activeChatType === 'group') {
+                alert('امکانات گروه نورا:\n- لینک دعوت واقعی\n- تغییر نام و پروفایل\n- افزودن عضو با شماره تلفن');
+            } else if (activeChatType === 'channel') {
+                alert('امکانات کانال نورا:\n- لینک عضویت\n- مدیریت مدیران\n- تغییر پروفایل کانال');
+            } else {
+                alert('مشاهده پروفایل مخاطب در نورا');
+            }
+        }
+
+        // منوی سه‌نقطه بالا
+        function toggleMenu(e) {
+            e.stopPropagation();
+            document.getElementById('telegramMenu').classList.toggle('active');
+        }
+        function closeDropdownOnOutside(e) {
+            if (!e.target.closest('.app-header')) {
+                document.getElementById('telegramMenu').classList.remove('active');
+            }
+        }
+        function viewProfile() { openChatInfo(); document.getElementById('telegramMenu').classList.remove('active'); }
+        function toggleMute() { alert('وضعیت اعلان تغییر کرد.'); document.getElementById('telegramMenu').classList.remove('active'); }
+        function archiveChat() { alert('گفتگو بایگانی شد.'); switchView('chatsView'); }
+        function clearMessages() { if(confirm('پاک کردن تمام پیام‌ها؟')) { document.getElementById('messagesContainer').innerHTML = '<div class="empty-state">پیامی نیست</div>'; document.getElementById('telegramMenu').classList.remove('active'); } }
+        function blockUser() { if(confirm('مسدود شود؟')) switchView('chatsView'); }
+        function deleteChat() { if(confirm('حذف کامل گفتگو؟')) switchView('chatsView'); }
+
+        async function loadChats() {
+            const list = document.getElementById('chatList');
+            try {
+                const res = await fetch(`${WORKER_URL}/api/get-chats?userId=${currentUserId}`);
+                const data = await res.json();
+                if (data.success && data.chats && data.chats.length > 0) {
+                    const colors = ['#3CBF8A', '#2E9AFE', '#9B59B6', '#E67E22', '#1ABC9C'];
+                    list.innerHTML = data.chats.map((chat, idx) => `
+                        <div class='chat-item' onclick="openChatWindow('${chat.chat_id}', '${chat.chat_name || 'نورا چت'}', '${chat.chat_type || 'private'}')">
+                            <div class='avatar-wrap'>
+                                <div class='chat-avatar' style="background-color: ${colors[idx % colors.length]};">${(chat.chat_name || 'ن').charAt(0)}</div>
+                            </div>
+                            <div class='chat-info'>
+                                <div class='chat-row1'>
+                                    <div class='chat-name'>${chat.chat_name || 'گفتگو'}</div>
+                                    <div class='chat-time'>${chat.message_count || ''}</div>
+                                </div>
+                                <div class='chat-row2'>
+                                    <div class='chat-preview'>${chat.last_message || 'سلام به نورا خوش آمدید...'}</div>
+                                    ${chat.unread_count ? `<div class='app-badge'>${chat.unread_count}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <span class="icon">✨</span>
+                            <h3>به نورا خوش آمدید</h3>
+                            <p>روی دکمه ✏️ سمت راست پایین کلیک کنید تا چت، گروه یا کانال بسازید.</p>
+                        </div>
+                    `;
+                }
+            } catch(e) {
+                list.innerHTML = `<div class="empty-state"><h3>خطا در ارتباط با سرور نورا</h3></div>`;
+            }
+        }
+
+        async function loadMessages() {
+            const container = document.getElementById('messagesContainer');
+            try {
+                const res = await fetch(`${WORKER_URL}/api/get-messages?chatId=${activeChatId}&limit=50`);
+                const data = await res.json();
+                if (data.success && data.messages && data.messages.length > 0) {
+                    container.innerHTML = data.messages.map(msg => `
+                        <div class="message ${msg.sender_id == currentUserId ? 'sent' : 'received'}">
+                            ${msg.text}
+                            <span class="time">${new Date(msg.created_at).toLocaleTimeString('fa', {hour:'2-digit', minute:'2-digit'})}</span>
+                        </div>
+                    `).join('');
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    container.innerHTML = `<div class="empty-state" style="padding:20px;">پیامی در این گفتگو ثبت نشده است.</div>`;
+                }
+            } catch(e) {
+                container.innerHTML = `<div class="empty-state" style="padding:20px;">خطا در بارگذاری پیام‌ها</div>`;
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+
+            try {
+                await fetch(`${WORKER_URL}/api/send-message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatId: activeChatId, senderId: currentUserId, text })
+                });
+                loadMessages();
+            } catch(e) {
+                alert('خطا در ارسال پیام');
+            }
+        }
+
+        // بارگذاری اولیه لیست
+        loadChats();
+    </script>
 </body>
 </html>
