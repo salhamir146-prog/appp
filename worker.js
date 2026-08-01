@@ -2,46 +2,10 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // مدیریت درخواست‌های API
     if (url.pathname.startsWith('/api/')) {
       return handleApi(request, env, url);
     }
-    // ===== ۱۳. دریافت کاربر با شماره تلفن =====
-if (url.pathname === "/api/get-user-by-phone" && request.method === "GET") {
-  const phone = url.searchParams.get('phone');
-  
-  if (!phone) {
-    return new Response(JSON.stringify({ success: false, message: "شماره وارد نشده" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    });
-  }
 
-  const user = await db.prepare(
-    "SELECT id, name, phone, avatar_url FROM users WHERE phone = ?"
-  ).bind(phone).first();
-
-  return new Response(JSON.stringify({ 
-    success: true, 
-    user: user || null 
-  }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
-// ===== ۱۲. دریافت لیست همه کاربران =====
-if (url.pathname === "/api/get-users" && request.method === "GET") {
-  const users = await db.prepare(
-    `SELECT id, name, phone, avatar_url, created_at FROM users ORDER BY name ASC`
-  ).all();
-
-  return new Response(JSON.stringify({ 
-    success: true, 
-    users: users.results 
-  }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
-    // نمایش فایل‌های استاتیک
     try {
       let response = await env.ASSETS.fetch(request);
       if (response.status === 404 && !url.pathname.includes('.')) {
@@ -68,46 +32,23 @@ async function handleApi(request, env, url) {
   try {
     const db = env.DB;
 
-   // ===== ۱. ارسال کد تایید =====
-if (url.pathname === "/api/send-code" && request.method === "POST") {
-  const { phone } = await request.json();
-  if (!phone) {
-    return new Response(JSON.stringify({ success: false, message: "شماره موبایل وارد نشده است" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    });
-  }
+    // ===== ۱. ارسال کد تایید =====
+    if (url.pathname === "/api/send-code" && request.method === "POST") {
+      const { phone } = await request.json();
+      if (!phone) {
+        return new Response(JSON.stringify({ success: false, message: "شماره موبایل وارد نشده است" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
 
-  // ✅ کد ثابت برای تست
-  const code = "45587";
-  await env.TELEGRAM_KV.put(`otp:${phone}`, code, { expirationTtl: 300 });
+      const code = "45587";
+      await env.TELEGRAM_KV.put(`otp:${phone}`, code, { expirationTtl: 300 });
 
-  // (اختیاری) ارسال پیامک - اگر میخوای غیرفعال کنی، کل این بخش رو کامنت کن
-  // if (env.SMS_IR_API_KEY) {
-  //   try {
-  //     const smsResponse = await fetch("https://api.sms.ir/v1/send/verify", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-API-KEY": env.SMS_IR_API_KEY
-  //       },
-  //       body: JSON.stringify({
-  //         Mobile: phone,
-  //         TemplateId: Number(env.SMS_IR_TEMPLATE_ID || 828739),
-  //         Parameters: [{ Name: "OTP", Value: code }]
-  //       })
-  //     });
-  //     const smsResult = await smsResponse.json();
-  //     console.log('SMS result:', smsResult);
-  //   } catch (smsError) {
-  //     console.error('SMS error:', smsError);
-  //   }
-  // }
-
-  return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
+      return new Response(JSON.stringify({ success: true, message: "کد تایید با موفقیت ارسال شد" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
 
     // ===== ۲. تایید کد و ثبت/ورود کاربر =====
     if (url.pathname === "/api/verify-code" && request.method === "POST") {
@@ -123,13 +64,12 @@ if (url.pathname === "/api/send-code" && request.method === "POST") {
 
       await env.TELEGRAM_KV.delete(`otp:${phone}`);
 
-      // ثبت یا ورود کاربر در D1
       let user = await db.prepare(
         "SELECT * FROM users WHERE phone = ?"
       ).bind(phone).first();
 
       if (!user) {
-        const result = await db.prepare(
+        await db.prepare(
           `INSERT INTO users (phone, name, created_at) VALUES (?, ?, ?)`
         ).bind(phone, `کاربر ${phone.slice(-4)}`, Date.now()).run();
         
@@ -138,7 +78,6 @@ if (url.pathname === "/api/send-code" && request.method === "POST") {
         ).bind(phone).first();
       }
 
-      // ایجاد نشست (Session) در KV
       const sessionToken = crypto.randomUUID();
       await env.TELEGRAM_KV.put(`session:${sessionToken}`, phone, { expirationTtl: 86400 * 7 });
 
@@ -350,7 +289,73 @@ if (url.pathname === "/api/send-code" && request.method === "POST") {
       }
     }
 
-    // ===== ۱۱. مسیر پیش‌فرض (NotFound) =====
+    // ===== ۱۱. دریافت همه کاربران =====
+    if (url.pathname === "/api/get-users" && request.method === "GET") {
+      const users = await db.prepare(
+        `SELECT id, name, phone, avatar_url, created_at FROM users ORDER BY name ASC`
+      ).all();
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        users: users.results 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // ===== ۱۲. جستجوی کاربر با شماره (پشتیبانی از همه فرمت‌ها) =====
+    if (url.pathname === "/api/find-user" && request.method === "GET") {
+      const phone = url.searchParams.get('phone');
+      
+      if (!phone) {
+        return new Response(JSON.stringify({ success: false, message: "شماره وارد نشده" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      let cleanPhone = phone.replace(/[^0-9]/g, '');
+      
+      const searchFormats = [];
+      
+      if (cleanPhone.startsWith('98')) {
+        searchFormats.push(cleanPhone);
+        searchFormats.push(cleanPhone.substring(2));
+        searchFormats.push('0' + cleanPhone.substring(2));
+      } else if (cleanPhone.startsWith('0')) {
+        const withoutZero = cleanPhone.substring(1);
+        searchFormats.push(cleanPhone);
+        searchFormats.push(withoutZero);
+        searchFormats.push('98' + withoutZero);
+      } else {
+        searchFormats.push(cleanPhone);
+        searchFormats.push('98' + cleanPhone);
+        searchFormats.push('0' + cleanPhone);
+      }
+      
+      const uniqueFormats = [...new Set(searchFormats)];
+      
+      let user = null;
+      for (const format of uniqueFormats) {
+        const result = await db.prepare(
+          "SELECT id, name, phone, avatar_url FROM users WHERE phone = ?"
+        ).bind(format).first();
+        
+        if (result) {
+          user = result;
+          break;
+        }
+      }
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        user: user || null
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // ===== مسیر پیش‌فرض =====
     return new Response(JSON.stringify({ success: false, message: "مسیر یافت نشد" }), {
       status: 404,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
