@@ -10,5 +10,11 @@ binding = "ASSETS"
 binding = "TELEGRAM_KV"
 id = "509be3057c4d44ef9eddfd047fcaf759"
 
+# ===== اضافه کردن D1 =====
+[[d1_databases]]
+binding = "DB"
+database_name = "gxrfrgrtrttr"
+database_id = "8ef51290-5ae8-4cef-ad07-449fa847318f"
+
 [vars]
 SMS_IR_TEMPLATE_ID = "828739"
