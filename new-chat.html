@@ -38,28 +38,18 @@
     </style>
 </head>
 <body>
-
 <div class="header">
     <span class="back material-icons-round" onclick="window.location.href='chats.html'">arrow_forward</span>
     <h1>✏️ چت جدید</h1>
 </div>
-
 <div class="search-box">
-    <input type="tel" id="phoneInput" placeholder="شماره تلفن را وارد کنید..." dir="ltr" maxlength="10" oninput="searchUser()">
-    <div class="hint">📱 مثلاً 9123456789 (بدون ۰)</div>
+    <input type="tel" id="phoneInput" placeholder="شماره تلفن را وارد کنید..." dir="ltr" maxlength="11" oninput="searchUser()">
+    <div class="hint">📱 مثلاً 9981064505 یا 09123456789</div>
 </div>
-
 <div class="result-area" id="resultArea">
-    <div class="empty-state">
-        <span>👤</span>
-        <h3>شماره کاربر را وارد کنید</h3>
-        <p>برای شروع چت، شماره تلفن کاربر را وارد کنید</p>
-    </div>
+    <div class="empty-state"><span>👤</span><h3>شماره کاربر را وارد کنید</h3><p>برای شروع چت، شماره تلفن کاربر را وارد کنید</p></div>
 </div>
-
-<div class="bottom-bar">
-    <div class="info" id="bottomInfo">🔍 برای پیدا کردن کاربر، شماره را وارد کنید</div>
-</div>
+<div class="bottom-bar"><div class="info" id="bottomInfo">🔍 برای پیدا کردن کاربر، شماره را وارد کنید</div></div>
 
 <script>
     const WORKER_URL = "https://appp.salhamir146.workers.dev";
@@ -69,59 +59,29 @@
     const phoneInput = document.getElementById('phoneInput');
     const resultArea = document.getElementById('resultArea');
     const bottomInfo = document.getElementById('bottomInfo');
-
-    let searchTimeout = null;
     let currentUser = null;
 
-    // ===== جستجوی کاربر =====
     async function searchUser() {
         const phone = phoneInput.value.trim().replace(/\D/g, '');
-        
         if (phone.length < 9) {
-            resultArea.innerHTML = `
-                <div class="empty-state">
-                    <span>🔢</span>
-                    <h3>شماره را کامل وارد کنید</h3>
-                    <p>حداقل ۹ رقم (مثلاً 9123456789)</p>
-                </div>
-            `;
+            resultArea.innerHTML = `<div class="empty-state"><span>🔢</span><h3>شماره را کامل وارد کنید</h3><p>حداقل ۹ رقم</p></div>`;
             bottomInfo.textContent = '📱 شماره را کامل وارد کنید';
             currentUser = null;
             return;
         }
-
-        // اضافه کردن 98 به اول شماره
-        const fullPhone = '98' + phone;
-
         bottomInfo.textContent = '🔍 در حال جستجو...';
-        resultArea.innerHTML = `
-            <div class="loader">
-                <div class="spinner"></div>
-                <div>در حال جستجو...</div>
-            </div>
-        `;
-
+        resultArea.innerHTML = `<div class="loader"><div class="spinner"></div><div>در حال جستجو...</div></div>`;
         try {
-            const response = await fetch(`${WORKER_URL}/api/get-user-by-phone?phone=${fullPhone}`);
+            const response = await fetch(`${WORKER_URL}/api/find-user?phone=${phone}`);
             const data = await response.json();
-
             if (data.success && data.user) {
                 currentUser = data.user;
-                
-                // اگر خودش باشه
                 if (currentUser.id == userId) {
-                    resultArea.innerHTML = `
-                        <div class="empty-state">
-                            <span>🙋</span>
-                            <h3>این شماره متعلق به شماست!</h3>
-                            <p>نمی‌توانید با خودتان چت کنید</p>
-                        </div>
-                    `;
+                    resultArea.innerHTML = `<div class="empty-state"><span>🙋</span><h3>این شماره متعلق به شماست!</h3><p>نمی‌توانید با خودتان چت کنید</p></div>`;
                     bottomInfo.textContent = '⚠️ این شماره خودتان است';
                     currentUser = null;
                     return;
                 }
-
                 resultArea.innerHTML = `
                     <div class="user-card" onclick="startChat()">
                         <div class="avatar">${currentUser.name?.charAt(0) || '👤'}</div>
@@ -132,103 +92,48 @@
                         <div class="action">شروع چت ➜</div>
                     </div>
                 `;
-                bottomInfo.innerHTML = `✅ <strong>${currentUser.name}</strong> پیدا شد - برای شروع چت کلیک کنید`;
+                bottomInfo.innerHTML = `✅ <strong>${currentUser.name}</strong> پیدا شد - کلیک کنید`;
             } else {
-                // کاربر وجود ندارد → پیشنهاد ثبت‌نام
-                resultArea.innerHTML = `
-                    <div class="empty-state">
-                        <span>➕</span>
-                        <h3>کاربری با این شماره یافت نشد</h3>
-                        <p>شماره ${phone} در سیستم ثبت نشده است</p>
-                        <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px dashed rgba(255,255,255,0.05)">
-                            <p style="font-size:12px;color:rgba(255,255,255,0.2)">💡 برای اضافه کردن کاربر جدید، از او بخواهید با این شماره ثبت‌نام کند</p>
-                        </div>
-                    </div>
-                `;
+                resultArea.innerHTML = `<div class="empty-state"><span>➕</span><h3>کاربری یافت نشد</h3><p>شماره ${phone} در سیستم ثبت نشده است</p></div>`;
                 bottomInfo.textContent = '❌ کاربری با این شماره یافت نشد';
                 currentUser = null;
             }
         } catch (err) {
-            resultArea.innerHTML = `
-                <div class="empty-state">
-                    <span>⚠️</span>
-                    <h3>خطا در جستجو</h3>
-                    <p>لطفاً دوباره تلاش کنید</p>
-                </div>
-            `;
+            resultArea.innerHTML = `<div class="empty-state"><span>⚠️</span><h3>خطا در جستجو</h3></div>`;
             bottomInfo.textContent = '❌ خطا در ارتباط با سرور';
             currentUser = null;
         }
     }
 
-    // ===== شروع چت =====
     async function startChat() {
-        if (!currentUser) {
-            alert('کاربری انتخاب نشده است');
-            return;
-        }
-
+        if (!currentUser) return;
         bottomInfo.textContent = '⏳ در حال ایجاد چت...';
-
         const chatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-        const userIds = [userId, currentUser.id];
-
         try {
-            // ایجاد چت
             const response = await fetch(`${WORKER_URL}/api/create-chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId, userIds })
+                body: JSON.stringify({ chatId, userIds: [userId, currentUser.id] })
             });
-
             const data = await response.json();
-
             if (data.success) {
-                // ارسال پیام خوش‌آمدگویی
                 await fetch(`${WORKER_URL}/api/send-message`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chatId: chatId,
-                        senderId: userId,
-                        text: '👋 سلام! گفتگو با شما شروع شد.',
-                        type: 'text'
-                    })
+                    body: JSON.stringify({ chatId, senderId: userId, text: '👋 سلام! گفتگو شروع شد.', type: 'text' })
                 });
-
                 window.location.href = `chat.html?chatId=${chatId}`;
             } else {
-                alert('خطا در ایجاد چت: ' + (data.message || ''));
-                bottomInfo.textContent = '❌ خطا در ایجاد چت';
+                alert('خطا در ایجاد چت');
             }
         } catch (err) {
             alert('خطا در ارتباط با سرور');
-            bottomInfo.textContent = '❌ خطا در ارتباط با سرور';
         }
     }
 
-    // ===== API جدید برای worker.js =====
-    // (این رو به worker.js اضافه کن)
-    // if (url.pathname === "/api/get-user-by-phone" && request.method === "GET") {
-    //   const phone = url.searchParams.get('phone');
-    //   const user = await db.prepare(
-    //     "SELECT id, name, phone, avatar_url FROM users WHERE phone = ?"
-    //   ).bind(phone).first();
-    //   return new Response(JSON.stringify({ success: true, user }), {
-    //     headers: { ...corsHeaders, "Content-Type": "application/json" }
-    //   });
-    // }
-
-    // ===== جلوگیری از ارسال خودکار =====
     phoneInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            if (currentUser) startChat();
-        }
+        if (e.key === 'Enter' && currentUser) startChat();
     });
-
-    console.log('🚀 صفحه چت جدید آماده است');
-    console.log('👤 کاربر جاری:', userId);
 </script>
 </body>
 </html>
