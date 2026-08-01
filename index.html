@@ -1,726 +1,470 @@
 <!DOCTYPE html>
-<html lang="fa" dir="ltr">
+<html lang='fa' dir='rtl'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Telegram - Login</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link href='https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/icon?family=Material+Icons+Round' rel='stylesheet'>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-touch-callout: none;
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn}
+        :root {
+            --bg-color: #f7fbf8;
+            --header-bg: rgba(255, 255, 255, .92);
+            --text-color: #222;
+            --sub-text: #777;
+            --time-color: #888;
+            --item-bg: #fff;
+            --border-color: #eee;
+            --primary: #3CBF8A;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #ffffff;
-            color: #000000;
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            direction: ltr;
+        .dark-mode {
+            --bg-color: #121212;
+            --header-bg: rgba(30, 30, 30, .92);
+            --text-color: #f1f1f1;
+            --sub-text: #aaa;
+            --time-color: #888;
+            --item-bg: #1e1e1e;
+            --border-color: #2c2c2c;
+            --primary: #3CBF8A;
         }
+        body{background:var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s;}
+        
+        .page { display: none; padding-bottom: 30px; }
+        .page.active { display: block; }
 
-        .top-header {
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
-            padding: 16px 24px 0 24px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .lang-switcher {
-            background: #f1f2f6;
-            border: none;
-            padding: 6px 14px;
+        .header{height:64px;background:var(--header-bg);backdrop-filter:blur(12px);display:flex;justify-content:space-between;align-items:center;padding:0 16px;box-shadow:0 2px 10px rgba(0,0,0,.05);position:sticky;top:0;z-index:100}
+        .logo{font-size:22px;font-weight:700;color:var(--primary); cursor: pointer;}
+        .icons{display:flex; align-items:center; position:relative;}
+        .icons span{font-size:24px;color:var(--sub-text);margin-left:15px;cursor:pointer}
+        .icons span:last-child { margin-left: 0; }
+        
+        .search-box {
+            display: none;
+            position: absolute;
+            top: 10px; left: 50px; right: 10px;
+            background: var(--item-bg);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
+            padding: 5px 15px;
+            align-items: center;
+            z-index: 110;
+        }
+        .search-box input {
+            width: 100%; border: none; background: transparent; outline: none; color: var(--text-color); font-size: 14px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            left: 15px; top: 60px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 180px;
+            z-index: 150;
+            overflow: hidden;
+        }
+        .dark-mode .dropdown-menu {
+            background: rgba(30, 30, 30, 0.85);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .dropdown-item {
+            padding: 12px 16px;
             font-size: 13px;
-            font-weight: 600;
-            color: #2481cc;
+            color: var(--text-color);
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .lang-switcher:active {
-            transform: scale(0.95);
-            background: #e2e3eb;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 24px 0 24px;
-            position: relative;
-            max-width: 420px;
-            width: 100%;
-            margin: 0 auto;
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            margin-bottom: 8px;
-            text-align: center;
-            color: #000;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #8e8e93;
-            text-align: center;
-            line-height: 1.4;
-            max-width: 300px;
-            margin-bottom: 35px;
-        }
-
-        .form-area {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .country-field {
-            width: 100%;
-            height: 52px;
-            border: 1px solid #e0e0e3;
-            border-radius: 12px;
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #ffffff;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .country-field:active {
-            background: #f2f2f7;
-            transform: scale(0.98);
-        }
-
-        .country-selected-view {
             display: flex;
             align-items: center;
             gap: 10px;
+            border-bottom: 1px solid var(--border-color);
         }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: rgba(60, 191, 138, 0.1); }
 
-        .country-flag-icon {
-            font-size: 20px;
-            line-height: 1;
-        }
+        .list{padding:10px}
+        .item{display:flex;align-items:center;background:var(--item-bg);padding:12px 15px;border-radius:16px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer;justify-content:space-between;border:1px solid var(--border-color)}
+        .avatar{width:46px;height:46px;border-radius:50%;margin-left:10px;background:linear-gradient(135deg,#8be4bf,#3CBF8A);position:relative;flex-shrink:0}
+        .avatar:after{content:'';position:absolute;bottom:2px;left:2px;width:10px;height:10px;background:#34C759;border:2px solid var(--item-bg);border-radius:50%}
+        .info{flex:1;min-width:0}
+        .top,.bottom{display:flex;justify-content:space-between;align-items:center}
+        .name{font-size:14px;font-weight:700;color:var(--text-color)}
+        .time{font-size:11px;color:var(--time-color)}
+        .msg{font-size:11.5px;color:var(--sub-text);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .badge{background:#3FCB87;color:#fff;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600}
+        
+        .fab{position:fixed;left:18px;bottom:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#52D39A,#2FBF71);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 18px rgba(47,191,113,.35);cursor:pointer;z-index:90}
 
-        .country-name-text {
-            font-size: 17px;
-            color: #000;
-            font-weight: 400;
-        }
+        .settings-category { font-size: 13px; font-weight: bold; color: var(--primary); margin: 15px 10px 5px 10px; }
+        .settings-container { padding: 10px; }
+        
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        .country-placeholder {
-            font-size: 17px;
-            color: #8e8e93;
-            font-weight: 400;
-        }
+        .sub-settings-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 200; overflow-y: auto; }
 
-        .country-arrow {
-            color: #b0b0b5;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .phone-field-box {
-            width: 100%;
-            height: 60px;
-            border: 1.5px solid #2481cc;
-            border-radius: 12px;
-            padding: 6px 14px;
-            background: #ffffff;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: 0 0 0 3px rgba(36, 129, 204, 0.12);
-        }
-
-        .phone-label-small {
-            font-size: 11px;
-            color: #2481cc;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .phone-input-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .plus-char {
-            font-size: 17px;
-            color: #000;
-            font-weight: 400;
-        }
-
-        .fake-input-display {
-            font-size: 17px;
-            color: #000;
-            font-weight: 400;
-            outline: none;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .phone-code-input {
-            width: 36px;
-        }
-
-        .phone-val-input {
-            flex: 1;
-            letter-spacing: 0.5px;
-        }
-
-        .phone-val-input:empty:before {
-            content: attr(data-placeholder);
-            color: #d1d1d6;
-        }
-
-        .cursor-blink {
-            display: inline-block;
-            width: 2px;
-            height: 18px;
-            background-color: #2481cc;
-            margin-left: 1px;
-            vertical-align: middle;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            50.1%, 100% { opacity: 0; }
-        }
-
-        .fab-next {
-            position: absolute;
-            right: 24px;
-            bottom: 260px;
-            width: 54px;
-            height: 54px;
-            background: #2481cc;
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(36, 129, 204, 0.35);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s;
-            z-index: 10;
-        }
-
-        .fab-next:hover {
-            transform: scale(1.06);
-            background: #1b6cae;
-        }
-
-        .fab-next:active {
-            transform: scale(0.92);
-        }
-
-        .fab-next svg {
-            width: 22px;
-            height: 22px;
-            stroke: #ffffff;
-            stroke-width: 2.5;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .ios-keyboard {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #f1f2f6;
-            padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)) 4px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            z-index: 20;
-            border-top: 1px solid #d8d8dc;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
-        }
-
-        .key-btn {
-            background: #ffffff;
-            border-radius: 6px;
-            height: 48px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-            transition: background 0.08s ease, transform 0.06s ease;
-        }
-
-        .key-btn:active {
-            background: #c5c7d0;
-            transform: scale(0.96);
-            box-shadow: none;
-        }
-
-        .k-num {
-            font-size: 23px;
-            font-weight: 400;
-            color: #000;
-            line-height: 1;
-        }
-
-        .k-sub {
-            font-size: 9px;
-            font-weight: 700;
-            color: #8e8e93;
-            letter-spacing: 0.8px;
-            margin-top: 2px;
-            text-transform: uppercase;
-        }
-
-        .k-plus {
-            font-size: 11px;
-            color: #8e8e93;
-            margin-top: 1px;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(3px);
-            z-index: 100;
-            display: flex;
-            align-items: flex-end;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-container {
-            background: #ffffff;
-            width: 100%;
-            height: 82vh;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            transform: translateY(100%);
-            transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-        }
-
-        .modal-overlay.active .modal-container {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #efeff4;
-        }
-
-        .modal-title {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .modal-done-btn {
-            background: none;
-            border: none;
-            color: #2481cc;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 4px 8px;
-        }
-
-        .search-wrapper {
-            padding: 12px 16px;
-        }
-
-        .search-box {
-            width: 100%;
-            height: 40px;
-            background: #efeff4;
-            border: none;
-            border-radius: 10px;
-            padding: 0 14px;
-            font-size: 15px;
-            outline: none;
-            color: #000;
-        }
-
-        .countries-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 16px;
-        }
-
-        .country-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 13px 8px;
-            border-bottom: 1px solid #f2f2f6;
-            cursor: pointer;
-        }
-
-        .country-item:active {
-            background: #f0f0f5;
-        }
+        .profile-container { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .profile-big-avatar { width: 90px; height: 90px; background: #000; border-radius: 50%; margin-bottom: 10px; background-size: cover; background-position: center; }
+        .profile-name { font-size: 18px; font-weight: 700; color: var(--text-color); }
+        .profile-status { font-size: 12px; color: var(--sub-text); margin-bottom: 20px; }
+        .profile-actions { display: flex; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px; }
+        .profile-btn { flex: 1; background: var(--item-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 14px; text-align: center; font-size: 12px; color: var(--text-color); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .profile-card { width: 100%; max-width: 400px; background: var(--item-bg); border-radius: 14px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .p-val { font-size: 14px; font-weight: 600; color: var(--text-color); }
+        .p-lbl { font-size: 11px; color: var(--sub-text); }
+        
+        .edit-form-group { margin-bottom: 15px; }
+        .edit-form-group label { display: block; font-size: 12px; color: var(--sub-text); margin-bottom: 5px; }
+        .edit-form-group input, .edit-form-group textarea { width: 100%; padding: 10px 12px; background: var(--item-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 10px; font-size: 14px; outline: none; }
     </style>
 </head>
 <body>
 
-    <div class="top-header">
-        <button class="lang-switcher" id="langToggleBtn">English</button>
-    </div>
+    <!-- اینپوت مخفی برای انتخاب عکس از گالری گوشی -->
+    <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handleImageSelection(event)">
 
-    <div class="main-content">
-        <h1 class="title" id="pageTitle">شماره تلفن شما</h1>
-        <p class="subtitle" id="pageSubtitle">لطفاً کد کشور خود را تأیید کرده و شماره تلفن خود را وارد کنید.</p>
-
-        <div class="form-area">
-            <div class="country-field" id="openCountryModal">
-                <div class="country-selected-view" id="selectedCountryDisplay">
-                    <span class="country-placeholder" id="countryPlaceholder">کشور</span>
-                </div>
-                <span class="country-arrow">❯</span>
-            </div>
-
-            <div class="phone-field-box">
-                <span class="phone-label-small" id="boxLabel">شماره تلفن</span>
-                <div class="phone-input-row">
-                    <span class="plus-char">+</span>
-                    <div class="fake-input-display phone-code-input" id="codeDisplay" onclick="setActiveField('code')">98</div>
-                    <div class="fake-input-display phone-val-input" id="numDisplay" data-placeholder="912 345 6789" onclick="setActiveField('phone')"><span class="cursor-blink"></span></div>
+    <!-- صفحه گفتگوها -->
+    <div id="chats-page" class="page active">
+        <div class='header'>
+            <div class='logo' onclick="switchTab('chats')">Messenger</div>
+            <div class='icons'>
+                <span class='material-icons-round' onclick="toggleSearch()">search</span>
+                <span class='material-icons-round' onclick="switchTab('profile')">settings</span>
+                <div class="search-box" id="searchBox">
+                    <input type="text" placeholder="جستجو در گفتگوها..." id="searchInput" onkeyup="filterChats()">
                 </div>
             </div>
         </div>
-
-        <button class="fab-next" id="nextBtn">
-            <svg viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-        </button>
+        
+        <div class='list' id="chatList">
+            <div class='item'><div class='avatar'></div><div class='info'><div class='top'><div class='name'>محمد</div><div class='time'>12:10</div></div><div class='bottom'><div class='msg'>آخرین پیام این گفتگو...</div><div class='badge'>1</div></div></div></div>
+            <div class='item'><div class='avatar'></div><div class='info'><div class='top'><div class='name'>گروه برنامه‌نویسی</div><div class='time'>12:11</div></div><div class='bottom'><div class='msg'>آخرین پیام این گفتگو...</div><div class='badge'>2</div></div></div></div>
+            <div class='item'><div class='avatar'></div><div class='info'><div class='top'><div class='name'>علی</div><div class='time'>12:12</div></div><div class='bottom'><div class='msg'>آخرین پیام این گفتگو...</div><div class='badge'>3</div></div></div></div>
+        </div>
+        <div class='fab'><span class='material-icons-round'>edit</span></div>
     </div>
 
-    <div class="ios-keyboard">
-        <div class="key-btn" data-v="1"><span class="k-num">1</span></div>
-        <div class="key-btn" data-v="2"><span class="k-num">2</span><span class="k-sub">ABC</span></div>
-        <div class="key-btn" data-v="3"><span class="k-num">3</span><span class="k-sub">DEF</span></div>
-        <div class="key-btn" data-v="4"><span class="k-num">4</span><span class="k-sub">GHI</span></div>
-        <div class="key-btn" data-v="5"><span class="k-num">5</span><span class="k-sub">JKL</span></div>
-        <div class="key-btn" data-v="6"><span class="k-num">6</span><span class="k-sub">MNO</span></div>
-        <div class="key-btn" data-v="7"><span class="k-num">7</span><span class="k-sub">PQRS</span></div>
-        <div class="key-btn" data-v="8"><span class="k-num">8</span><span class="k-sub">TUV</span></div>
-        <div class="key-btn" data-v="9"><span class="k-num">9</span><span class="k-sub">WXYZ</span></div>
-        <div class="key-btn" style="visibility: hidden; pointer-events: none;"></div>
-        <div class="key-btn" data-v="0"><span class="k-num">0</span><span class="k-plus">+</span></div>
-        <div class="key-btn" data-v="del">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
-                <line x1="18" y1="9" x2="12" y2="15"></line>
-                <line x1="12" y1="9" x2="18" y2="15"></line>
-            </svg>
+    <!-- صفحه پروفایل من -->
+    <div id="profile-page" class="page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;">
+                <span class='material-icons-round' onclick="switchTab('chats')" style="margin-left: 0; margin-right: 0;">arrow_forward</span>
+            </div>
+            <div class='logo' style="position: absolute; right: 55px;">پروفایل من</div>
+            <div class='icons'>
+                <span class='material-icons-round' onclick="toggleMenu(event)">more_vert</span>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="openEditProfile()"><span class="material-icons-round" style="font-size:18px;">edit</span>ویرایش اطلاعات</div>
+                    <div class="dropdown-item" onclick="openGallery()"><span class="material-icons-round" style="font-size:18px;">photo_camera</span>تنظیم عکس</div>
+                    <div class="dropdown-item" onclick="toggleDarkMode()"><span class="material-icons-round" style="font-size:18px;">dark_mode</span>حالت شب</div>
+                    <div class="dropdown-item" onclick="alert('خروج از حساب کاربری')" style="color: #ef4444;"><span class="material-icons-round" style="font-size:18px;">logout</span>خروج از حساب</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-container">
+            <div class="profile-big-avatar" id="profile-avatar-img"></div>
+            <div class="profile-name" id="display-name">Amirsalh</div>
+            <div class="profile-status" id="display-bio">آنلاین</div>
+
+            <div class="profile-actions">
+                <div class="profile-btn" onclick="openGallery()"><span class="material-icons-round">photo_camera</span>تنظیم عکس</div>
+                <div class="profile-btn" onclick="openEditProfile()"><span class="material-icons-round">edit</span>ویرایش اطلاعات</div>
+                <div class="profile-btn" onclick="switchTab('settings')"><span class="material-icons-round">settings</span>تنظیمات</div>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-info-row">
+                    <div class="p-val">+98 998 106 4505</div>
+                    <div class="p-lbl">شماره تلفن</div>
+                </div>
+                <hr style="border:0; border-top:1px solid var(--border-color); margin: 10px 0;">
+                <div class="profile-info-row">
+                    <div class="p-val" id="display-username">@Agbsheb</div>
+                    <div class="p-lbl">نام کاربری (آیدی)</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="countryModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <span class="modal-title" id="modalTitleText">انتخاب کشور</span>
-                <button class="modal-done-btn" id="closeModalBtn">تایید</button>
+    <!-- صفحه ویرایش اطلاعات -->
+    <div id="sub-edit-profile" class="sub-settings-page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="closeEditProfile()">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">ویرایش اطلاعات</div>
+        </div>
+        <div class="settings-container" style="max-width: 450px; margin: 0 auto;">
+            <div class="edit-form-group">
+                <label>نام</label>
+                <input type="text" id="input-name" value="Amirsalh">
             </div>
-            <div class="search-wrapper">
-                <input type="text" class="search-box" id="searchCountry" placeholder="جستجو...">
+            <div class="edit-form-group">
+                <label>آیدی (نام کاربری)</label>
+                <input type="text" id="input-username" value="@Agbsheb">
             </div>
-            <div class="countries-list" id="countriesList"></div>
+            <div class="edit-form-group">
+                <label>بیوگرافی</label>
+                <textarea id="input-bio" rows="3">آنلاین</textarea>
+            </div>
+            <button style="width:100%; background:var(--primary); color:#fff; border:none; padding:12px; border-radius:14px; font-weight:bold; margin-top:10px; cursor:pointer;" onclick="saveProfileInfo()">ذخیره تغییرات</button>
+        </div>
+    </div>
+
+    <!-- صفحه اصلی تنظیمات -->
+    <div id="settings-page" class="page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="switchTab('profile')">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">تنظیمات</div>
+        </div>
+        <div class="settings-container">
+            <div class="item" onclick="openSubSettings('privacy')">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="material-icons-round" style="color:var(--primary)">security</span>
+                    <div><div class="name">حریم خصوصی و امنیت</div><div class="msg">قفل، مسدودسازی، نشست‌ها</div></div>
+                </div>
+                <span class="material-icons-round" style="color:var(--sub-text)">chevron_left</span>
+            </div>
+
+            <div class="item" onclick="openSubSettings('appearance')">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="material-icons-round" style="color:var(--primary)">palette</span>
+                    <div><div class="name">تنظیمات ظاهری</div><div class="msg">تم، رنگ، فونت، حباب‌ها</div></div>
+                </div>
+                <span class="material-icons-round" style="color:var(--sub-text)">chevron_left</span>
+            </div>
+
+            <div class="item" onclick="openSubSettings('language')">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="material-icons-round" style="color:var(--primary)">language</span>
+                    <div><div class="name">زبان / Language</div><div class="msg">فارسی، English و...</div></div>
+                </div>
+                <span class="material-icons-round" style="color:var(--sub-text)">chevron_left</span>
+            </div>
+
+            <div class="item" onclick="openSubSettings('default-tab')">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="material-icons-round" style="color:var(--primary)">home</span>
+                    <div><div class="name">تب پیش‌فرض</div><div class="msg">انتخاب صفحه شروع برنامه</div></div>
+                </div>
+                <span class="material-icons-round" style="color:var(--sub-text)">chevron_left</span>
+            </div>
+
+            <div class="item" onclick="openSubSettings('support')">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="material-icons-round" style="color:var(--primary)">support_agent</span>
+                    <div><div class="name">پشتیبانی و راهنما</div><div class="msg">ارتباط با ادمین، سوالات متداول</div></div>
+                </div>
+                <span class="material-icons-round" style="color:var(--sub-text)">chevron_left</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش‌های زیرمجموعه تنظیمات -->
+    <div id="sub-privacy" class="sub-settings-page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="closeSubSettings('privacy')">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">حریم خصوصی و امنیت</div>
+        </div>
+        <div class="settings-container">
+            <div class="settings-category">امنیت</div>
+            <div class="item">
+                <div><div class="name">قفل برنامه</div><div class="msg">رمز عبور / اثر انگشت / تشخیص چهره</div></div>
+                <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <div class="item" onclick="alert('احراز هویت دو مرحله‌ای فعال است')"><div><div class="name">احراز هویت دو مرحله‌ای</div></div><span class="material-icons-round">chevron_left</span></div>
+            <div class="item" onclick="alert('نشست‌های فعال: 1 گوشی، 1 ویندوز')"><div><div class="name">نشست‌های فعال (گوشی، ویندوز، مک، مرورگر)</div><div class="msg">مدیریت دستگاه‌های متصل</div></div><span class="material-icons-round">chevron_left</span></div>
+            
+            <div class="settings-category">حریم خصوصی داده‌ها</div>
+            <div class="item"><div><div class="name">آخرین بازدید و آنلاین بودن</div></div><select style="background:var(--item-bg); color:var(--text-color); border:1px solid var(--border-color); padding:5px; border-radius:8px;"><option>همه</option><option>مخاطبین</option><option>هیچ‌کس</option></select></div>
+            <div class="item"><div><div class="name">عکس پروفایل</div></div><select style="background:var(--item-bg); color:var(--text-color); border:1px solid var(--border-color); padding:5px; border-radius:8px;"><option>همه</option><option>مخاطبین</option><option>هیچ‌کس</option></select></div>
+            <div class="item"><div><div class="name">شماره تلفن</div></div><select style="background:var(--item-bg); color:var(--text-color); border:1px solid var(--border-color); padding:5px; border-radius:8px;"><option>همه</option><option>مخاطبین</option><option>هیچ‌کس</option></select></div>
+            
+            <div class="settings-category">مدیریت پیام‌ها</div>
+            <div class="item"><div><div class="name">حذف خودکار پیام‌ها</div></div><select style="background:var(--item-bg); color:var(--text-color); border:1px solid var(--border-color); padding:5px; border-radius:8px;"><option>خاموش</option><option>۱ روز</option><option>۷ روز</option><option>۱ ماه</option></select></div>
+            <div class="item" onclick="alert('کاربر مسدود شده‌ای وجود ندارد')"><div><div class="name">مخاطبین مسدود شده</div></div><button style="background:var(--primary); color:#fff; border:none; padding:5px 12px; border-radius:8px; cursor:pointer;">➕ افزودن</button></div>
+        </div>
+    </div>
+
+    <div id="sub-appearance" class="sub-settings-page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="closeSubSettings('appearance')">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">تنظیمات ظاهری</div>
+        </div>
+        <div class="settings-container">
+            <div class="settings-category">تم و حالت نمایش</div>
+            <div class="item"><div><div class="name">حالت شب</div></div><label class="switch"><input type="checkbox" id="darkSwitch" onchange="toggleDarkMode()"><span class="slider"></span></label></div>
+            <div class="item"><div><div class="name">حالت خودکار (بر اساس ساعت گوشی)</div></div><label class="switch"><input type="checkbox"><span class="slider"></span></label></div>
+            <div class="item"><div><div class="name">افکت شیشه‌ای</div><div class="msg">خاموش شود کل برنامه ساده می‌شود</div></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+            
+            <div class="settings-category">شخصی‌سازی</div>
+            <div class="item"><div><div class="name">رنگ اصلی برنامه</div></div><select style="background:var(--item-bg); color:var(--text-color); border:1px solid var(--border-color); padding:5px; border-radius:8px;"><option>سبز (پیش‌فرض)</option><option>آبی</option><option>بنفش</option><option>قرمز</option><option>نارنجی</option></select></div>
+            <div class="item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                <div class="name">اندازه فونت (کوچک، متوسط، بزرگ)</div>
+                <input type="range" min="1" max="3" value="2" style="width:100%;">
+            </div>
+            <div class="item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                <div class="name">گردی گوشه‌ها (از مربع تا کاملاً گرد)</div>
+                <input type="range" min="0" max="25" value="16" style="width:100%;">
+            </div>
+            <div class="item" onclick="alert('انتخاب تصویر پس‌زمینه گفتگو از گالری/رنگ ساده')"><div><div class="name">تصویر پس‌زمینه گفتگو</div></div><span class="material-icons-round">chevron_left</span></div>
+        </div>
+    </div>
+
+    <div id="sub-language" class="sub-settings-page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="closeSubSettings('language')">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">انتخاب زبان</div>
+        </div>
+        <div class="settings-container">
+            <div class="item"><div><div class="name">فارسی (Persian)</div></div><span class="material-icons-round" style="color:var(--primary);">check</span></div>
+            <div class="item"><div><div class="name">English</div></div></div>
+            <div class="item"><div><div class="name">العربية (Arabic)</div></div></div>
+            <div class="item"><div><div class="name">Türkçe</div></div></div>
+            <div class="item"><div><div class="name">اردو (Urdu)</div></div></div>
+            <div class="item"><div><div class="name">Français</div></div></div>
+            <div class="item"><div><div class="name">Deutsch</div></div></div>
+            <div class="item"><div><div class="name">Русский</div></div></div>
+            <button style="width:100%; background:var(--primary); color:#fff; border:none; padding:12px; border-radius:14px; font-weight:bold; margin-top:20px; cursor:pointer;" onclick="alert('تغییرات زبان اعمال شد!')">اعمال تغییرات</button>
+        </div>
+    </div>
+
+    <div id="sub-default-tab" class="sub-settings-page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="closeSubSettings('default-tab')">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">تب پیش‌فرض برنامه</div>
+        </div>
+        <div class="settings-container">
+            <div class="settings-category">هنگام ورود به برنامه، صفحه پیش‌فرض کدام باشد؟</div>
+            <label class="item"><div class="name">○ چت‌ها</div><input type="radio" name="defTab" checked></label>
+            <label class="item"><div class="name">○ مخاطبین</div><input type="radio" name="defTab"></label>
+            <label class="item"><div class="name">○ تماس‌ها</div><input type="radio" name="defTab"></label>
+            <label class="item"><div class="name">○ کانال‌ها</div><input type="radio" name="defTab"></label>
+            <label class="item"><div class="name">○ گروه‌ها</div><input type="radio" name="defTab"></label>
+            <label class="item"><div class="name">○ ربات‌ها</div><input type="radio" name="defTab"></label>
+            <label class="item"><div class="name">○ تنظیمات</div><input type="radio" name="defTab"></label>
+        </div>
+    </div>
+
+    <div id="sub-support" class="sub-settings-page">
+        <div class='header'>
+            <div class='icons' style="justify-content: flex-start;"><span class='material-icons-round' onclick="closeSubSettings('support')">arrow_forward</span></div>
+            <div class='logo' style="position: absolute; right: 55px;">پشتیبانی و راهنما</div>
+        </div>
+        <div class="settings-container">
+            <div class="item" onclick="alert('باز شدن چت مستقیم با ادمین پشتیبانی')"><div><div class="name">📩 تماس با پشتیبانی</div><div class="msg">گفتگو با ادمین</div></div><span class="material-icons-round">chevron_left</span></div>
+            <div class="item" onclick="alert('سوالات متداول (FAQ):\n- چطور حساب بسازیم؟ با شماره تلفن.\n- آیا امن است؟ بله رمزنگاری شده.')"><div><div class="name">❓ سوالات متداول</div></div><span class="material-icons-round">chevron_left</span></div>
+            <div class="item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                <div class="name">🐞 گزارش مشکل</div>
+                <input type="text" placeholder="عنوان مشکل..." style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:8px; background:var(--item-bg); color:var(--text-color);">
+                <textarea placeholder="توضیحات کامل..." style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:8px; background:var(--item-bg); color:var(--text-color); height:70px;"></textarea>
+                <button style="background:var(--primary); color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;" onclick="alert('گزارش مشکل شما با موفقیت ارسال شد.')">ارسال گزارش</button>
+            </div>
+            <div class="item" onclick="alert('امتیاز شما ثبت شد. متشکریم! ⭐⭐⭐⭐⭐')"><div><div class="name">⭐ امتیاز به برنامه (۵ ستاره)</div></div><span class="material-icons-round">star</span></div>
+            <div class="item" onclick="alert('تمامی حقوق محفوظ است. قوانین حریم خصوصی و امنیت داده‌ها رعایت شده است.')"><div><div class="name">📄 قوانین و شرایط / ℹ درباره برنامه</div><div class="msg">نسخه 3.2.0 - سازنده: تیم توسعه</div></div><span class="material-icons-round">info</span></div>
         </div>
     </div>
 
     <script>
-        // ======= آدرس Worker =======
-        const WORKER_URL = "https://appp.salhamir146.workers.dev";
-        // ===========================
+        function switchTab(tabName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('dropdownMenu').style.display = 'none';
 
-        let currentLang = 'fa';
-
-        const translations = {
-            fa: {
-                title: 'شماره تلفن شما',
-                subtitle: 'لطفاً کد کشور خود را تأیید کرده و شماره تلفن خود را وارد کنید.',
-                country: 'کشور',
-                phoneLabel: 'شماره تلفن',
-                codeLabel: 'کد کشور',
-                modalTitle: 'انتخاب کشور',
-                doneBtn: 'تایید',
-                searchPlaceholder: 'جستجو...',
-                nextLangBtn: 'English',
-                errorIran: 'لطفاً فقط از شماره تلفن‌های ایران (+98) استفاده کنید.'
-            },
-            en: {
-                title: 'Your phone number',
-                subtitle: 'Please confirm your country code and enter your phone number.',
-                country: 'Country',
-                phoneLabel: 'Phone number',
-                codeLabel: 'Country code',
-                modalTitle: 'Choose a country',
-                doneBtn: 'Done',
-                searchPlaceholder: 'Search',
-                nextLangBtn: 'فارسی',
-                errorIran: 'Please use Iranian phone numbers (+98) only.'
+            if(tabName === 'chats') {
+                document.getElementById('chats-page').classList.add('active');
+            } else if(tabName === 'profile') {
+                document.getElementById('profile-page').classList.add('active');
+            } else if(tabName === 'settings') {
+                document.getElementById('settings-page').classList.add('active');
             }
-        };
-
-        const countries = [
-            { name: 'Iran', code: '98', flag: '🇮🇷' },
-            { name: 'United States', code: '1', flag: '🇺🇸' },
-            { name: 'United Kingdom', code: '44', flag: '🇬🇧' },
-            { name: 'Germany', code: '49', flag: '🇩🇪' },
-            { name: 'Turkey', code: '90', flag: '🇹🇷' },
-            { name: 'Afghanistan', code: '93', flag: '🇦🇫' },
-            { name: 'United Arab Emirates', code: '971', flag: '🇦🇪' },
-            { name: 'Canada', code: '1', flag: '🇨🇦' },
-            { name: 'Iraq', code: '964', flag: '🇮🇶' }
-        ];
-
-        let phoneText = '';
-        let codeText = '98';
-        let activeField = 'phone';
-        let isSubmitting = false;
-
-        const numDisplay = document.getElementById('numDisplay');
-        const codeDisplay = document.getElementById('codeDisplay');
-        const selectedCountryDisplay = document.getElementById('selectedCountryDisplay');
-        const boxLabel = document.getElementById('boxLabel');
-        const countryPlaceholder = document.getElementById('countryPlaceholder');
-        
-        const pageTitle = document.getElementById('pageTitle');
-        const pageSubtitle = document.getElementById('pageSubtitle');
-        const langToggleBtn = document.getElementById('langToggleBtn');
-        const modalTitleText = document.getElementById('modalTitleText');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const searchCountry = document.getElementById('searchCountry');
-        const nextBtn = document.getElementById('nextBtn');
-
-        const countryModal = document.getElementById('countryModal');
-        const openCountryModal = document.getElementById('openCountryModal');
-        const countriesList = document.getElementById('countriesList');
-
-        function updateTexts() {
-            const t = translations[currentLang];
-            pageTitle.textContent = t.title;
-            pageSubtitle.textContent = t.subtitle;
-            countryPlaceholder.textContent = t.country;
-            langToggleBtn.textContent = t.nextLangBtn;
-            modalTitleText.textContent = t.modalTitle;
-            closeModalBtn.textContent = t.doneBtn;
-            searchCountry.placeholder = t.searchPlaceholder;
-            boxLabel.textContent = activeField === 'phone' ? t.phoneLabel : t.codeLabel;
+            window.scrollTo(0,0);
         }
 
-        langToggleBtn.addEventListener('click', () => {
-            currentLang = currentLang === 'fa' ? 'en' : 'fa';
-            updateTexts();
-        });
-
-        function updateDisplay() {
-            numDisplay.innerHTML = (phoneText === '' ? '' : phoneText) + '<span class="cursor-blink"></span>';
-            codeDisplay.textContent = codeText;
-            const t = translations[currentLang];
-            boxLabel.textContent = activeField === 'phone' ? t.phoneLabel : t.codeLabel;
+        function openEditProfile() {
+            document.getElementById('sub-edit-profile').style.display = 'block';
+            document.getElementById('dropdownMenu').style.display = 'none';
         }
 
-        window.setActiveField = function(field) {
-            activeField = field;
-            updateDisplay();
+        function closeEditProfile() {
+            document.getElementById('sub-edit-profile').style.display = 'none';
         }
 
-        function setCountry(country) {
-            codeText = country.code;
-            selectedCountryDisplay.innerHTML = `
-                <span class="country-flag-icon">${country.flag}</span>
-                <span class="country-name-text">${country.name}</span>
-            `;
-            countryModal.classList.remove('active');
-            updateDisplay();
+        function saveProfileInfo() {
+            let newName = document.getElementById('input-name').value;
+            let newUsername = document.getElementById('input-username').value;
+            let newBio = document.getElementById('input-bio').value;
+
+            document.getElementById('display-name').innerText = newName;
+            document.getElementById('display-username').innerText = newUsername;
+            document.getElementById('display-bio').innerText = newBio;
+
+            closeEditProfile();
+            alert('اطلاعات پروفایل با موفقیت ویرایش و ذخیره شد!');
         }
 
-        setCountry(countries[0]);
+        function openGallery() {
+            document.getElementById('dropdownMenu').style.display = 'none';
+            document.getElementById('gallery-input').click();
+        }
 
-        openCountryModal.addEventListener('click', () => {
-            countryModal.classList.add('active');
-            renderList(countries);
-            searchCountry.value = '';
-        });
+        function handleImageSelection(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar-img').style.backgroundImage = `url('${e.target.result}')`;
+                    alert('عکس پروفایل با موفقیت تغییر کرد!');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
-        closeModalBtn.addEventListener('click', () => {
-            countryModal.classList.remove('active');
-        });
+        function openSubSettings(subName) {
+            document.getElementById('sub-' + subName).style.display = 'block';
+        }
 
-        countryModal.addEventListener('click', (e) => {
-            if (e.target === countryModal) countryModal.classList.remove('active');
-        });
+        function closeSubSettings(subName) {
+            document.getElementById('sub-' + subName).style.display = 'none';
+        }
 
-        function renderList(list) {
-            countriesList.innerHTML = '';
-            list.forEach(c => {
-                const item = document.createElement('div');
-                item.className = 'country-item';
-                item.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 22px;">${c.flag}</span>
-                        <span style="font-size: 16px; color: #000;">${c.name}</span>
-                    </div>
-                    <span style="color: #8e8e93; font-size: 15px;">+${c.code}</span>
-                `;
-                item.addEventListener('click', () => setCountry(c));
-                countriesList.appendChild(item);
+        function toggleSearch() {
+            const box = document.getElementById('searchBox');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+            if(box.style.display === 'flex') document.getElementById('searchInput').focus();
+        }
+
+        function filterChats() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            let items = document.querySelectorAll('#chatList .item');
+            items.forEach(item => {
+                let name = item.querySelector('.name').innerText.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
             });
         }
 
-        searchCountry.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = countries.filter(c => c.name.toLowerCase().includes(query) || c.code.includes(query));
-            renderList(filtered);
-        });
-
-        // تابع ارسال شماره به Worker
-        async function sendPhoneToWorker(phone) {
-            if (isSubmitting) return;
-            isSubmitting = true;
-            nextBtn.style.opacity = '0.6';
-            nextBtn.style.pointerEvents = 'none';
-
-            try {
-                const fullPhone = '+' + codeText + phone;
-                
-                const response = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        phone: fullPhone,
-                        action: 'send_code'
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    localStorage.setItem('userPhone', fullPhone);
-                    setTimeout(() => {
-                        window.location.href = 'verify.html';
-                    }, 300);
-                } else {
-                    alert(data.message || (currentLang === 'fa' ? 'خطا در ارسال کد. لطفاً دوباره تلاش کنید.' : 'Error sending code. Please try again.'));
-                }
-            } catch (error) {
-                console.error('Error sending phone:', error);
-                alert(currentLang === 'fa' ? 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.' : 'Connection error. Please try again.');
-            } finally {
-                isSubmitting = false;
-                nextBtn.style.opacity = '1';
-                nextBtn.style.pointerEvents = 'auto';
-            }
+        function toggleMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('dropdownMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        nextBtn.addEventListener('click', () => {
-            if (codeText !== '98') {
-                alert(translations[currentLang].errorIran);
-                return;
-            }
-            if (phoneText.length < 9) {
-                alert(currentLang === 'fa' ? 'لطفاً شماره تلفن را به صورت کامل وارد کنید.' : 'Please enter a valid phone number.');
-                return;
-            }
-            
-            sendPhoneToWorker(phoneText);
-        });
+        window.onclick = function() {
+            const menu = document.getElementById('dropdownMenu');
+            if(menu) menu.style.display = 'none';
+        }
 
-        document.querySelectorAll('.key-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const val = btn.getAttribute('data-v');
-                if (!val) return;
-                
-                if (val === 'del') {
-                    if (activeField === 'phone') {
-                        phoneText = phoneText.slice(0, -1);
-                    } else {
-                        codeText = codeText.slice(0, -1);
-                    }
-                } else {
-                    if (activeField === 'phone') {
-                        if (phoneText.length < 15) phoneText += val;
-                    } else {
-                        if (codeText.length < 4) codeText += val;
-                    }
-                }
-                updateDisplay();
-            });
-        });
-
-        // پشتیبانی از کیبورد فیزیکی
-        document.addEventListener('keydown', (e) => {
-            if (e.key >= '0' && e.key <= '9') {
-                if (activeField === 'phone') {
-                    if (phoneText.length < 15) phoneText += e.key;
-                } else {
-                    if (codeText.length < 4) codeText += e.key;
-                }
-                updateDisplay();
-                e.preventDefault();
-            } else if (e.key === 'Backspace') {
-                if (activeField === 'phone') {
-                    phoneText = phoneText.slice(0, -1);
-                } else {
-                    codeText = codeText.slice(0, -1);
-                }
-                updateDisplay();
-                e.preventDefault();
-            } else if (e.key === 'Enter') {
-                nextBtn.click();
-                e.preventDefault();
-            }
-        });
-
-        updateTexts();
-        updateDisplay();
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            const dSwitch = document.getElementById('darkSwitch');
+            if(dSwitch) dSwitch.checked = isDark;
+            const menu = document.getElementById('dropdownMenu');
+            if(menu) menu.style.display = 'none';
+        }
     </script>
 </body>
 </html>
